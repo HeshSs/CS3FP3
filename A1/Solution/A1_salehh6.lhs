@@ -29,11 +29,37 @@ pos :: Eq a => a -> [a] -> [Integer]
 pos e l = [i | (i, x) <- zip [0..] l, x == e]
 \end{code}
 
+Which of the 3 functions, 
+1. Which do very related things?
+The matches and pos function do almost the same thing, because one gets all the occurences of an element and the other
+gets all the indices of that element.
+
+2. Which is 'best'?
+I think the pos function is the best, because it's implementation needs either a helper function or a list comprehension
+with zip function because we gotta keep track of the indices. Also, the pos function gives you the index of where the element exists
+, but the matches function just repeats the same element over and over again.
+
 Question 2:
 
-function description
+The applyAll function returns a list resulted from the cross-product of applying all the functions in the 1st list (1st argument) 
+to the 2nd list (2nd argument).
 \begin{code}
---applyAll :: [a -> b] -> [a] -> [b]
---applyAll (x : xs) = 
+applyAll :: [a -> b] -> [a] -> [b]
+applyAll _ [] = []
+applyAll [] _ = []
+applyAll (f:fs) l = map f l ++ applyAll fs l
+\end{code}
+
+Question 3:
+
+function description:
+\begin{code}
+
+\end{code}
+
+Question 4:
+
+function description:
+\begin{code}
 
 \end{code}
