@@ -52,10 +52,22 @@ applyAll (f:fs) l = map f l ++ applyAll fs l
 
 Question 3:
 
-function description:
+The tripleNeg1 function triples every negative number in a list, recursively.
 \begin{code}
-
+tripleNeg1 :: (Ord a, Num a) => [a] -> [a]
+tripleNeg1 [] = []
+tripleNeg1 (x:xs) | x < 0     = (x * 3) : tripleNeg1 xs
+                  | otherwise = x : tripleNeg1 xs
 \end{code}
+
+The tripleNeg2 function triples every negative number in a list, using either and map functions.
+\begin{code}
+tripleNeg2 :: (Ord a, Num a) => [a] -> [a]
+tripleNeg2 l = map (\z -> either (\x -> x) (\y -> y * 3) z) s
+        where 
+            s = map (\x -> if x < 0 then Right x else Left x) l
+\end{code}
+
 
 Question 4:
 
