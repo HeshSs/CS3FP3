@@ -25,24 +25,15 @@ element e (x : xs) | e == x    = True
 The posHelper function returns a list of all the indexes at which the 1st argument occurs in the list (2nd argument).
 The pos function just calls the posHelper function with index 0 and it's 1st and 2nd arguments.
 \begin{code}
-posHelper :: Eq a => Integer -> a -> [a] -> [Integer]
-posHelper _ _ [] = []
-posHelper i e (x : xs) | e == x  = i : posHelper (i + 1) e xs
-                       | otherwise = posHelper (i + 1) e xs
-
 pos :: Eq a => a -> [a] -> [Integer]
--- pos e l = posHelper 0 e l
-pos = posHelper 0
+pos e l = [i | (i, x) <- zip [0..] l, x == e]
 \end{code}
 
 Question 2:
 
 function description
 \begin{code}
-
-\end{code}
-
-function description
-\begin{code}
+--applyAll :: [a -> b] -> [a] -> [b]
+--applyAll (x : xs) = 
 
 \end{code}
