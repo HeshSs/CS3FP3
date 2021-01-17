@@ -26,7 +26,11 @@ The posHelper function returns a list of all the indexes at which the 1st argume
 The pos function just calls the posHelper function with index 0 and it's 1st and 2nd arguments.
 \begin{code}
 pos :: Eq a => a -> [a] -> [Integer]
-pos e l = [i | (i, x) <- zip [0..] l, x == e]
+pos = posHelper 0
+    where
+        posHelper _ _ [] = []
+        posHelper i e (x : xs) | e == x    = i : posHelper (i + 1) e xs
+                               | otherwise = posHelper (i + 1) e xs
 \end{code}
 
 Which of the 3 functions, 
