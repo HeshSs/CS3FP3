@@ -125,10 +125,80 @@ flattenTernary (TNode a b c) = flattenTernary a ++ flattenTernary b ++ flattenTe
 
 Question 6:
 
-function description:
+Given universal quantification over a list:
 \begin{code}
-
+all :: (a -> Bool) -> [a] -> Bool
+all p [] = True                         -- base case of all
+all p (x : xs) = p x && all p xs        -- inductive step of all
 \end{code}
+
+Prove ∀p, xs, ys, all p (xs ++ ys) = all p xs ∧ all p ys 
+by induction.
+
+Let P(xs) = ∀p, xs, ys, all p (xs ++ ys) = all p xs ∧ all p ys,
+we will prove P(xs) by weak inducion on xs.
+
+Base case P([]): 
+We have
+    ∀p, ys, all p ([] ++ ys) = all p [] ∧ all p ys      (By base case of all)
+    ∀p, ys, all p ([] ++ ys) = True ∧ all p ys          (By identity of ∧)
+    ∀p, ys, all p ([] ++ ys) = all p ys                 
+
+Let Q(ys) = ∀p, ys, all p ([] ++ ys) = all p ys,
+we will prove Q(ys) by another induction on ys.
+
+Base case Q([]):
+We have
+    ∀p, all p ([] ++ []) = all p []     (By identity of ++)
+    ∀p, all p [] = all p []             (By reflexitivity of =)
+    ∀p, True                            (True for all)
+    True
+
+Then Q([]) holds.
+
+Inductive step Q(y:ys):
+    ∀p, all p ([] ++ (y:ys)) = all p (y:ys)     (By identity of ++)
+    ∀p, all p (y:ys) = all p (y:ys)             (By reflexitivity of =)
+    ∀p, True                                    (True for all)
+    True
+
+Then, Q(ys) holds, as a result P([]) holds as well.
+
+Inductive step P(x:xs):
+We have
+    ∀p, ys, all p ((x:xs) ++ ys) = all p (x:xs) ∧ all p ys
+
+Let Q(ys) = ∀p, ys, all p ((x:xs) ++ ys) = all p (x:xs) ∧ all p ys, 
+we will prove Q(ys) by another induction on ys.
+
+Base case Q([]):
+We have
+    ∀p, all p ((x:xs) ++ []) = all p (x:xs) ∧ all p []      (By identity of ++)
+    ∀p, all p (x:xs) = all p (x:xs) ∧ all p []              (By base case of all)
+    ∀p, all p (x:xs) = all p (x:xs) ∧ true                  (By identity of ∧)
+    ∀p, all p (x:xs) = all p (x:xs)                         (By reflexitivity of =)
+    ∀p, True                                                (True for all)
+    True
+
+Then Q([]) holds.
+
+Inductive step Q(y:ys):
+    ∀p, all p ((x:xs) ++ (y:ys)) = all p (x:xs) ∧ all p (y:ys)              (By inductive step of all)
+    ∀p, all p ((x:xs) ++ (y:ys)) = p x ∧ (all p xs) ∧ p y ∧ (all p ys)      (By associativity of ∧)
+    ∀p, all p ((x:xs) ++ (y:ys)) = p x ∧ p y ∧ (all p xs) ∧ (all p ys)      (By inductive step of P(xs))
+    ∀p, all p ((x:xs) ++ (y:ys)) = p x ∧ p y ∧ all p (xs ++ ys)             (By definition of :)
+    ∀p, all p (x:(xs ++ (y:ys))) = p x ∧ p y ∧ all p (xs ++ ys)             (By inductive step of all)
+    ∀p, p x ∧ all p (xs ++ (y:ys)) = p x ∧ p y ∧ all p (xs ++ ys)           (By reflexitivity of ++)
+    ∀p, p x ∧ all p ((y:ys) ++ xs) = p x ∧ p y ∧ all p (xs ++ ys)           (By inductive step of Q(ys))
+    ∀p, p x ∧ all p (y:ys) ∧ all p xs = p x ∧ p y ∧ all p (xs ++ ys)        (By inductive step of all)
+    ∀p, p x ∧ p y ∧ all p ys ∧ all p xs = p x ∧ p y ∧ all p (xs ++ ys)      (By associativity of ∧)
+    ∀p, p x ∧ p y ∧ all p xs ∧ all p ys = p x ∧ p y ∧ all p (xs ++ ys)      (By inductive step of P(xs))
+    ∀p, p x ∧ p y ∧ all p (xs ++ ys) = p x ∧ p y ∧ all p (xs ++ ys)         (By reflexitivity of =)
+    ∀p, True                                                                (True for all)
+    True
+
+Then, Q(ys) holds, as a result P(xs) holds as well.
+
 
 Question 7:
 
