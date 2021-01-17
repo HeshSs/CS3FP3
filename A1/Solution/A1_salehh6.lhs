@@ -72,7 +72,7 @@ Question 4:
 
 Creating a new data type called OrBoth that contains elements of type a, b or both.
 \begin{code}
-data OrBoth a b = A a | B b | OrBoth a b
+data OrBoth a b = A a | B b | OrBoth a b deriving Show
 \end{code}
 
 The consume1 function applies the given function to a given OrBoth data type. 
@@ -98,9 +98,25 @@ i.e. You can call consume1 in itself, but for consume2 you can't create the func
 
 Question 5:
 
-function description:
+Creating a new data type called Ternary, which represents a ternary tree.
 \begin{code}
+data Ternary a = TLeaf a | TNode (Ternary a) (Ternary a) (Ternary a) deriving Show
+\end{code}
 
+The mirror function makes a mirror reflection of the current tree, meaning everything in the left leaf a node is moved
+to the right node and vice versa. 
+\begin{code}
+mirror :: Ternary a -> Ternary a
+mirror (TNode a b c) = TNode (mirror c) (mirror b) (mirror a)
+mirror (TLeaf a) = TLeaf a
+\end{code}
+
+The flattenTernary function converts a ternary tree to a list, where the left most leaf/node is included first and the right
+most leaf/node is added last.
+\begin{code}
+flattenTernary :: Ternary a -> [a]
+flattenTernary (TLeaf a) = [a]
+flattenTernary (TNode a b c) = flattenTernary a ++ flattenTernary b ++ flattenTernary c
 \end{code}
 
 Question 6:
