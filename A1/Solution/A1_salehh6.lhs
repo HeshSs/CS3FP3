@@ -63,13 +63,75 @@ tripleNeg1 (x:xs) | x < 0     = (x * 3) : tripleNeg1 xs
 The tripleNeg2 function triples every negative number in a list, using either and map functions.
 \begin{code}
 tripleNeg2 :: (Ord a, Num a) => [a] -> [a]
-tripleNeg2 l = map (\z -> either (\x -> x) (\y -> y * 3) z) s
+tripleNeg2 l = map (either id (* 3)) s
         where 
             s = map (\x -> if x < 0 then Right x else Left x) l
 \end{code}
 
-
 Question 4:
+
+Creating a new data type called OrBoth that contains elements of type a, b or both.
+\begin{code}
+data OrBoth a b = A a | B b | OrBoth a b
+\end{code}
+
+The consume1 function applies the given function to a given OrBoth data type. 
+\begin{code}
+consume1 :: (a -> c) -> (b -> c) -> (a -> b -> c) -> OrBoth a b -> c
+consume1 fa fb fboth (OrBoth a b) = fboth a b
+consume1 fa fb fboth (A a) = fa a
+consume1 fa fb fboth (B b) = fb b
+\end{code}
+
+The consume2 function applies the given function to a given OrBoth data type, but when called for both a and b, 
+it applies the first 2 functions on the given inputs then applies the 3rd function on the result taken from their outputs.
+\begin{code}
+consume2 :: (a -> c) -> (b -> c) -> (c -> c -> c) -> OrBoth a b -> c
+consume2 fa fb fboth (OrBoth a b) = fboth (fa a) (fb b)
+consume2 fa fb fboth (A a) = fa a
+consume2 fa fb fboth (B b) = fb b
+\end{code}
+
+Which of those two ways is "better" in your opinion? Why?
+I think the consume1 function is better, because you can create the functionality of consume2 all from consume1. 
+i.e. You can call consume1 in itself, but for consume2 you can't create the functionality of consume1.
+
+Question 5:
+
+function description:
+\begin{code}
+
+\end{code}
+
+Question 6:
+
+function description:
+\begin{code}
+
+\end{code}
+
+Question 7:
+
+function description:
+\begin{code}
+
+\end{code}
+
+Question 8:
+
+function description:
+\begin{code}
+
+\end{code}
+
+Question 9:
+
+function description:
+\begin{code}
+
+\end{code}
+
+Question 10:
 
 function description:
 \begin{code}
