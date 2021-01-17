@@ -126,11 +126,9 @@ flattenTernary (TNode a b c) = flattenTernary a ++ flattenTernary b ++ flattenTe
 Question 6:
 
 Given universal quantification over a list:
-\begin{code}
 all :: (a -> Bool) -> [a] -> Bool
 all p [] = True                         -- base case of all
 all p (x : xs) = p x && all p xs        -- inductive step of all
-\end{code}
 
 Prove ∀p, xs, ys, all p (xs ++ ys) = all p xs ∧ all p ys 
 by induction.
@@ -202,9 +200,11 @@ Then, Q(ys) holds, as a result P(xs) holds as well.
 
 Question 7:
 
-function description:
+Explicitly define ∀xs, ys . mystery f xs ys = map f (zip xs yz)
 \begin{code}
-
+mystery :: ((a, b) -> c) -> [a] -> [b] -> [c]
+mystery _ [] [] = []
+mystery f (x:xs) (y:ys) = f (x, y) : mystery f xs ys
 \end{code}
 
 Question 8:
