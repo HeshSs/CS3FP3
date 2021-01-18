@@ -74,6 +74,7 @@ tripleNeg2 l = map (either id (* 3)) s
 
 Question 4:
 
+Some help was taken from http://learnyouahaskell.com/making-our-own-types-and-typeclasses
 Creating a new data type called OrBoth that contains elements of type a, b or both.
 \begin{code}
 data OrBoth a b = A a | B b | OrBoth a b deriving Show
@@ -218,14 +219,39 @@ reverse' xs = foldr (\y ys -> ys ++ [y]) [] xs
 \end{code}
 
 Bonus (Proof):
-
+TODO
 
 Question 9:
 
-function description:
+Creating a new data type called Tree, which represents a binary tree.
 \begin{code}
-
+data Tree a = Tip | Node (Tree a) a (Tree a)
 \end{code}
+
+The mirror function returns a mirror reflection of the current tree.
+\begin{code}
+mirrorTree :: Tree a -> Tree a
+mirrorTree Tip = Tip
+mirrorTree (Node l a r) = Node (mirrorTree r) a (mirrorTree l)
+\end{code}
+
+Info about pre-order and post-order at https://www.geeksforgeeks.org/tree-traversals-inorder-preorder-and-postorder/
+The pre function traverses a tree in pre-order and returns a list. 
+\begin{code}
+pre :: Tree a -> [a]
+pre Tip = []
+pre (Node l a r) = [a] ++ pre l ++ pre r
+\end{code}
+
+The post function traverses a tree in post-order and returns a list. 
+\begin{code}
+post :: Tree a -> [a]
+post Tip = []
+post (Node l a r) = post l ++ post r ++ [a]
+\end{code}
+
+Prove that pre (mirrorTree t) = reverse (post t).
+TODO
 
 Question 10:
 
