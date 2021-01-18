@@ -209,10 +209,16 @@ mystery f (x:xs) (y:ys) = f (x, y) : mystery f xs ys
 
 Question 8:
 
-function description:
+Some help was taken from 
+https://medium.com/@StevenLeiva1/haskell-book-chapter-10-folding-lists-3e9e82ce5201#:~:text=To%20recap%2C%20with%20foldr%20%2C%20the,returns%20a%20new%20default%20value.
+The reverse' function reverses a list using the foldr function.
 \begin{code}
-
+reverse' :: [a] -> [a]
+reverse' xs = foldr (\y ys -> ys ++ [y]) [] xs
 \end{code}
+
+Bonus (Proof):
+
 
 Question 9:
 
