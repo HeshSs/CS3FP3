@@ -227,7 +227,7 @@ TODO
 
 Creating a new data type called Tree, which represents a binary tree.
 \begin{code}
-data Tree a = Tip | Node (Tree a) a (Tree a)
+data Tree a = Tip | Node (Tree a) a (Tree a) deriving Show
 \end{code}
 
 The mirror function returns a mirror reflection of the current tree.
@@ -278,8 +278,11 @@ to' (Node t1 a (Node t2 b t3)) = [Rose a (to' t1)] ++ ([Rose b (to' t2)] ++ to' 
 
 function description:
 \begin{code}
---from' :: [Rose a] -> Tree a
-
+from' :: [Rose a] -> Tree a
+from' [] = Tip
+from' [Rose a []] = Node Tip a Tip
+from' ((Rose b ((Rose a t1):t2)):t3) = Node (Node (from' t1) a (from' t2)) b (from' t3)
+from' ((Rose a t1):((Rose b t2):t3)) = Node (from' t1) a (Node (from' t2) b (from' t3))
 \end{code}
 
 function description:
