@@ -1,10 +1,11 @@
 Assignment 1 - Compsci 3FA3 - Hishmat Salehi - Salehh6
 \begin{code}
-main :: IO ()
-main = return ()
+module A1_salehh6 where
 \end{code}
 
-Question 1:
+\begin{enumerate}
+
+\item Question 1:
 
 The matches function returns all the elements in the last (2nd argument) that are equal to the 1st argument.
 \begin{code}
@@ -43,7 +44,7 @@ I think the pos function is the best, because it's implementation needs either a
 with zip function because we gotta keep track of the indices. Also, the pos function gives you the index of where the element exists
 , but the matches function just repeats the same element over and over again.
 
-Question 2:
+\item Question 2:
 
 The applyAll function returns a list resulted from the cross-product of applying all the functions in the 1st list (1st argument) 
 to the 2nd list (2nd argument).
@@ -54,7 +55,7 @@ applyAll [] _ = []
 applyAll (f:fs) l = map f l ++ applyAll fs l
 \end{code}
 
-Question 3:
+\item Question 3:
 
 The tripleNeg1 function triples every negative number in a list, recursively.
 \begin{code}
@@ -72,7 +73,7 @@ tripleNeg2 l = map (either id (* 3)) s
             s = map (\x -> if x < 0 then Right x else Left x) l
 \end{code}
 
-Question 4:
+\item Question 4:
 
 Some help was taken from http://learnyouahaskell.com/making-our-own-types-and-typeclasses
 Creating a new data type called OrBoth that contains elements of type a, b or both.
@@ -101,7 +102,7 @@ Which of those two ways is "better" in your opinion? Why?
 I think the consume1 function is better, because you can create the functionality of consume2 all from consume1. 
 i.e. You can call consume1 in itself, but for consume2 you can't create the functionality of consume1.
 
-Question 5:
+\item Question 5:
 
 Creating a new data type called Ternary, which represents a ternary tree.
 \begin{code}
@@ -124,8 +125,9 @@ flattenTernary (TLeaf a) = [a]
 flattenTernary (TNode a b c) = flattenTernary a ++ flattenTernary b ++ flattenTernary c
 \end{code}
 
-Question 6:
+\item Question 6:
 
+\begin{verbatim}
 Given universal quantification over a list:
 all :: (a -> Bool) -> [a] -> Bool
 all p [] = True                         -- base case of all
@@ -197,9 +199,9 @@ Inductive step Q(y:ys):
     True
 
 Then, Q(ys) holds, as a result P(xs) holds as well.
+\end{verbatim}
 
-
-Question 7:
+\item Question 7:
 
 Explicitly define ∀xs, ys . mystery f xs ys = map f (zip xs yz)
 \begin{code}
@@ -208,11 +210,11 @@ mystery _ [] [] = []
 mystery f (x:xs) (y:ys) = f (x, y) : mystery f xs ys
 \end{code}
 
-Question 8:
+\item Question 8:
 
 Some help was taken from 
 https://medium.com/@StevenLeiva1/haskell-book-chapter-10-folding-lists-3e9e82ce5201#:~:text=To%20recap%2C%20with%20foldr%20%2C%20the,returns%20a%20new%20default%20value.
-The reverse' function reverses a list using the foldr function.
+The reverse function reverses a list using the foldr function.
 \begin{code}
 reverse' :: [a] -> [a]
 reverse' xs = foldr (\y ys -> ys ++ [y]) [] xs
@@ -221,7 +223,7 @@ reverse' xs = foldr (\y ys -> ys ++ [y]) [] xs
 Bonus (Proof):
 TODO
 
-Question 9:
+\item Question 9:
 
 Creating a new data type called Tree, which represents a binary tree.
 \begin{code}
@@ -253,9 +255,43 @@ post (Node l a r) = post l ++ post r ++ [a]
 Prove that pre (mirrorTree t) = reverse (post t).
 TODO
 
-Question 10:
+\item Question 10:
+
+Creating a new data type called Rose, which represents a rose tree.
+\begin{code}
+data Rose a = Rose a [Rose a] deriving Show
+\end{code}
+
+Creating a new data type called Fork, which represents a leaf/branch tree.
+\begin{code}
+data Fork a = Leaf a | Branch (Fork a) (Fork a)
+\end{code}
 
 function description:
 \begin{code}
+to' :: Tree a -> [Rose a]
+to' Tip = []
+to' (Node Tip a Tip) = [Rose a []]
+to' (Node (Node t1 a t2) b t3) = [Rose b ([Rose a (to' t1)] ++ (to' t2))] ++ to' t3
+to' (Node t1 a (Node t2 b t3)) = [Rose a (to' t1)] ++ ([Rose b (to' t2)] ++ to' t3)
+\end{code}
+
+function description:
+\begin{code}
+--from' :: [Rose a] -> Tree a
 
 \end{code}
+
+function description:
+\begin{code}
+--to :: Rose a -> Fork a
+
+\end{code}
+
+function description:
+\begin{code}
+--from :: Fork a -> Rose a
+
+\end{code}
+
+\end{enumerate}
