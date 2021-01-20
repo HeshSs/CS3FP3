@@ -50,8 +50,8 @@ The applyAll function returns a list resulted from the cross-product of applying
 to the 2nd list (2nd argument).
 \begin{code}
 applyAll :: [a -> b] -> [a] -> [b]
-applyAll _ [] = []
-applyAll [] _ = []
+applyAll _ []     = []
+applyAll [] _     = []
 applyAll (f:fs) l = map f l ++ applyAll fs l
 \end{code}
 
@@ -60,7 +60,7 @@ applyAll (f:fs) l = map f l ++ applyAll fs l
 The tripleNeg1 function triples every negative number in a list, recursively.
 \begin{code}
 tripleNeg1 :: (Ord a, Num a) => [a] -> [a]
-tripleNeg1 [] = []
+tripleNeg1 []     = []
 tripleNeg1 (x:xs) | x < 0     = (x * 3) : tripleNeg1 xs
                   | otherwise = x : tripleNeg1 xs
 \end{code}
@@ -85,8 +85,8 @@ The consume1 function applies the given function to a given OrBoth data type.
 \begin{code}
 consume1 :: (a -> c) -> (b -> c) -> (a -> b -> c) -> OrBoth a b -> c
 consume1 fa fb fboth (OrBoth a b) = fboth a b
-consume1 fa fb fboth (A a) = fa a
-consume1 fa fb fboth (B b) = fb b
+consume1 fa fb fboth (A a)        = fa a
+consume1 fa fb fboth (B b)        = fb b
 \end{code}
 
 The consume2 function applies the given function to a given OrBoth data type, but when called for both a and b, 
@@ -94,8 +94,8 @@ it applies the first 2 functions on the given inputs then applies the 3rd functi
 \begin{code}
 consume2 :: (a -> c) -> (b -> c) -> (c -> c -> c) -> OrBoth a b -> c
 consume2 fa fb fboth (OrBoth a b) = fboth (fa a) (fb b)
-consume2 fa fb fboth (A a) = fa a
-consume2 fa fb fboth (B b) = fb b
+consume2 fa fb fboth (A a)        = fa a
+consume2 fa fb fboth (B b)        = fb b
 \end{code}
 
 Which of those two ways is "better" in your opinion? Why?
@@ -114,14 +114,14 @@ to the right node and vice versa.
 \begin{code}
 mirror :: Ternary a -> Ternary a
 mirror (TNode a b c) = TNode (mirror c) (mirror b) (mirror a)
-mirror (TLeaf a) = TLeaf a
+mirror (TLeaf a)     = TLeaf a
 \end{code}
 
 The flattenTernary function converts a ternary tree to a list, where the left most leaf/node is included first and the right
 most leaf/node is added last.
 \begin{code}
 flattenTernary :: Ternary a -> [a]
-flattenTernary (TLeaf a) = [a]
+flattenTernary (TLeaf a)     = [a]
 flattenTernary (TNode a b c) = flattenTernary a ++ flattenTernary b ++ flattenTernary c
 \end{code}
 
@@ -206,7 +206,7 @@ Then, Q(ys) holds, as a result P(xs) holds as well.
 Explicitly define ∀xs, ys . mystery f xs ys = map f (zip xs yz)
 \begin{code}
 mystery :: ((a, b) -> c) -> [a] -> [b] -> [c]
-mystery _ [] [] = []
+mystery _ [] []         = []
 mystery f (x:xs) (y:ys) = f (x, y) : mystery f xs ys
 \end{code}
 
@@ -233,7 +233,7 @@ data Tree a = Tip | Node (Tree a) a (Tree a) deriving Show
 The mirror function returns a mirror reflection of the current tree.
 \begin{code}
 mirrorTree :: Tree a -> Tree a
-mirrorTree Tip = Tip
+mirrorTree Tip          = Tip
 mirrorTree (Node l a r) = Node (mirrorTree r) a (mirrorTree l)
 \end{code}
 
@@ -241,14 +241,14 @@ Info about pre-order and post-order at https://www.geeksforgeeks.org/tree-traver
 The pre function traverses a tree in pre-order and returns a list. 
 \begin{code}
 pre :: Tree a -> [a]
-pre Tip = []
+pre Tip          = []
 pre (Node l a r) = [a] ++ pre l ++ pre r
 \end{code}
 
 The post function traverses a tree in post-order and returns a list. 
 \begin{code}
 post :: Tree a -> [a]
-post Tip = []
+post Tip          = []
 post (Node l a r) = post l ++ post r ++ [a]
 \end{code}
 
@@ -264,14 +264,14 @@ data Rose a = Rose a [Rose a] deriving Show
 
 Creating a new data type called Fork, which represents a leaf/branch tree.
 \begin{code}
-data Fork a = Leaf a | Branch (Fork a) (Fork a)
+data Fork a = Leaf a | Branch (Fork a) (Fork a) deriving Show
 \end{code}
 
 function description:
 \begin{code}
 to' :: Tree a -> [Rose a]
-to' Tip = []
-to' (Node Tip a Tip) = [Rose a []]
+to' Tip                        = []
+to' (Node Tip a Tip)           = [Rose a []]
 to' (Node (Node t1 a t2) b t3) = [Rose b ([Rose a (to' t1)] ++ (to' t2))] ++ to' t3
 to' (Node t1 a (Node t2 b t3)) = [Rose a (to' t1)] ++ ([Rose b (to' t2)] ++ to' t3)
 \end{code}
@@ -279,15 +279,20 @@ to' (Node t1 a (Node t2 b t3)) = [Rose a (to' t1)] ++ ([Rose b (to' t2)] ++ to' 
 function description:
 \begin{code}
 from' :: [Rose a] -> Tree a
-from' [] = Tip
-from' [Rose a []] = Node Tip a Tip
+from' []                             = Tip
+from' [Rose a []]                    = Node Tip a Tip
 from' ((Rose b ((Rose a t1):t2)):t3) = Node (Node (from' t1) a (from' t2)) b (from' t3)
 from' ((Rose a t1):((Rose b t2):t3)) = Node (from' t1) a (Node (from' t2) b (from' t3))
 \end{code}
 
 function description:
 \begin{code}
---to :: Rose a -> Fork a
+to :: Rose a -> Fork a
+to (Rose a [])     = Leaf a
+to (Rose a (x:xs)) = Branch (brancher (to x) xs) (Leaf a)
+    where 
+        brancher fork []     = fork
+        brancher fork (y:ys) = brancher (Branch fork (to y)) ys
 
 \end{code}
 
