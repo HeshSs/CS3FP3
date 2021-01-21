@@ -298,8 +298,13 @@ to (Rose a (x:xs)) = Branch (brancher (to x) xs) (Leaf a)
 
 function description:
 \begin{code}
---from :: Fork a -> Rose a
-
+from :: Fork a -> Rose a
+from (Leaf a)            = Rose a []
+from (Branch b (Leaf a)) = Rose a (debrancher b [])
+    where 
+        debrancher (Leaf x) roses       = [Rose x roses]
+        debrancher (Branch (Leaf x) b) roses = [Rose x (debrancher b roses)]
+--        debrancher (Branch b (Leaf x)) = [Rose x (debrancher b roses)]
 \end{code}
 
 \end{enumerate}
