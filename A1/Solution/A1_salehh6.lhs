@@ -304,6 +304,7 @@ from fork     = debrancher fork []
     where 
         debrancher (Branch (Leaf x) y) roses = Rose x ([from y] ++ roses)
         debrancher (Branch x (Leaf y)) roses = debrancher x [Rose y []]
+        debrancher (Branch (Branch w x) (Branch y z)) roses = debrancher (Branch w x) [debrancher (Branch y z) roses]
         
 --Rose x ([from y] ++ [from z])
 
