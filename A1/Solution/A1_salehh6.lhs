@@ -289,10 +289,10 @@ function description:
 \begin{code}
 to :: Rose a -> Fork a
 to (Rose a [])     = Leaf a
-to (Rose a (x:xs)) = Branch (brancher (to x) xs) (Leaf a)
+to (Rose a (x:xs)) = brancher (Branch (Leaf a) (to x)) xs
     where 
         brancher fork []     = fork
-        brancher fork (y:ys) = brancher (Branch fork (to y)) ys
+        brancher fork (x:xs) = brancher (Branch fork (to x)) xs
 
 \end{code}
 
@@ -300,11 +300,6 @@ function description:
 \begin{code}
 from :: Fork a -> Rose a
 from (Leaf a)            = Rose a []
-from (Branch b (Leaf a)) = Rose a (debrancher b [])
-    where 
-        debrancher (Leaf x) roses       = [Rose x roses]
-        debrancher (Branch (Leaf x) b) roses = [Rose x (debrancher b roses)]
---        debrancher (Branch b (Leaf x)) = [Rose x (debrancher b roses)]
 \end{code}
 
 \end{enumerate}
