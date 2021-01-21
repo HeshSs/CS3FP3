@@ -221,7 +221,9 @@ reverse' xs = foldr (\y ys -> ys ++ [y]) [] xs
 \end{code}
 
 Bonus (Proof):
+\begin{verbatim}
 TODO
+\end{verbatim}
 
 \item Question 9:
 
@@ -253,7 +255,9 @@ post (Node l a r) = post l ++ post r ++ [a]
 \end{code}
 
 Prove that pre (mirrorTree t) = reverse (post t).
+\begin{verbatim}
 TODO
+\end{verbatim}
 
 \item Question 10:
 
@@ -267,7 +271,7 @@ Creating a new data type called Fork, which represents a leaf/branch tree.
 data Fork a = Leaf a | Branch (Fork a) (Fork a) deriving Show
 \end{code}
 
-function description:
+The to' function given a Binary tree converts it to a list of Rose trees.
 \begin{code}
 to' :: Tree a -> [Rose a]
 to' Tip                        = []
@@ -276,7 +280,7 @@ to' (Node (Node t1 a t2) b t3) = [Rose b ([Rose a (to' t1)] ++ (to' t2))] ++ to'
 to' (Node t1 a (Node t2 b t3)) = [Rose a (to' t1)] ++ ([Rose b (to' t2)] ++ to' t3)
 \end{code}
 
-function description:
+The from' function given a list of Rose trees converts it to a Binary tree.
 \begin{code}
 from' :: [Rose a] -> Tree a
 from' []                             = Tip
@@ -285,7 +289,7 @@ from' ((Rose b ((Rose a t1):t2)):t3) = Node (Node (from' t1) a (from' t2)) b (fr
 from' ((Rose a t1):((Rose b t2):t3)) = Node (from' t1) a (Node (from' t2) b (from' t3))
 \end{code}
 
-function description:
+The to function given a Rose tree converts it to a Fork tree (Leaf tree).
 \begin{code}
 to :: Rose a -> Fork a
 to (Rose a [])     = Leaf a
@@ -296,7 +300,7 @@ to (Rose a (x:xs)) = brancher (Branch (Leaf a) (to x)) xs
 
 \end{code}
 
-function description:
+The from function given a Fork tree (Leaf tree) converts it to a Rose tree.
 \begin{code}
 from :: Fork a -> Rose a
 from (Leaf a) = Rose a []
@@ -305,9 +309,13 @@ from fork     = debrancher fork []
         debrancher (Branch (Leaf x) y) roses = Rose x ([from y] ++ roses)
         debrancher (Branch x (Leaf y)) roses = debrancher x [Rose y []]
         debrancher (Branch (Branch w x) (Branch y z)) roses = debrancher (Branch w x) [debrancher (Branch y z) roses]
-        
---Rose x ([from y] ++ [from z])
+\end{code}    
 
-\end{code}
+
+Bonus (Proof):
+Prove that ∀xs. to (from xs) = xs.
+\begin{verbatim}
+TODO
+\end{verbatim}
 
 \end{enumerate}
