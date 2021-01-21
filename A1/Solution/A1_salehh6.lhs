@@ -299,7 +299,14 @@ to (Rose a (x:xs)) = brancher (Branch (Leaf a) (to x)) xs
 function description:
 \begin{code}
 from :: Fork a -> Rose a
-from (Leaf a)            = Rose a []
+from (Leaf a) = Rose a []
+from fork     = debrancher fork []
+    where 
+        debrancher (Branch (Leaf x) y) roses = Rose x ([from y] ++ roses)
+        debrancher (Branch x (Leaf y)) roses = debrancher x [Rose y []]
+        
+--Rose x ([from y] ++ [from z])
+
 \end{code}
 
 \end{enumerate}
