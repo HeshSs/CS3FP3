@@ -220,11 +220,6 @@ reverse' :: [a] -> [a]
 reverse' xs = foldr (\y ys -> ys ++ [y]) [] xs
 \end{code}
 
-Bonus (Proof):
-\begin{verbatim}
-TODO
-\end{verbatim}
-
 \item Question 9:
 
 Creating a new data type called Tree, which represents a binary tree.
@@ -235,28 +230,51 @@ data Tree a = Tip | Node (Tree a) a (Tree a) deriving Show
 The mirror function returns a mirror reflection of the current tree.
 \begin{code}
 mirrorTree :: Tree a -> Tree a
-mirrorTree Tip          = Tip
-mirrorTree (Node l a r) = Node (mirrorTree r) a (mirrorTree l)
+mirrorTree Tip          = Tip                                   -- Base case of mirrorTree
+mirrorTree (Node l a r) = Node (mirrorTree r) a (mirrorTree l)  -- inductive step of mirrorTree
 \end{code}
 
 Info about pre-order and post-order at https://www.geeksforgeeks.org/tree-traversals-inorder-preorder-and-postorder/
 The pre function traverses a tree in pre-order and returns a list. 
 \begin{code}
 pre :: Tree a -> [a]
-pre Tip          = []
-pre (Node l a r) = [a] ++ pre l ++ pre r
+pre Tip          = []                       -- Base case of pre
+pre (Node l a r) = [a] ++ pre l ++ pre r    -- Inductive step of pre
 \end{code}
 
 The post function traverses a tree in post-order and returns a list. 
 \begin{code}
 post :: Tree a -> [a]
-post Tip          = []
-post (Node l a r) = post l ++ post r ++ [a]
+post Tip          = []                      -- Base case of post
+post (Node l a r) = post l ++ post r ++ [a] -- Inductive step of post
 \end{code}
 
 Prove that pre (mirrorTree t) = reverse (post t).
 \begin{verbatim}
-TODO
+Base case t = Tip:
+    pre (mirrorTree Tip) = reverse (post Tip)       (By base case of mirrorTree)
+    pre Tip = reverse (post Tip)                    (By base case of post)
+    pre Tip = reverse []                            (By base case of reverse)
+    pre Tip = []                                    (By base case of pre)
+    [] = []                                         (By reflexitivity of =)
+    True
+
+Assume inductive hypothesis, pre (mirrorTree t) = reverse (post t).
+Inductive step t = (Node (Node l1 a r1) b (Node l2 c r2)):
+lhs:
+    pre (mirrorTree (Node (Node l1 a r1) b (Node l2 c r2)))                                                             (By inductive step of mirrorTree)
+    pre (Node (mirrorTree (Node l2 c r2)) b (mirrorTree (Node l1 a r1)))                                                (By inductive step of pre)
+    [b] ++ pre (mirrorTree (Node l2 c r2)) ++ pre (mirrorTree (Node l1 a r1))                                           (By inductive step of mirrorTree)
+    [b] ++ pre (Node (mirrorTree r2) c (mirrorTree l2)) ++ pre (Node (mirrorTree r1) a (mirrorTree l1))                 (By inductive step of pre)
+    [b] ++ [c] ++ pre (mirrorTree r2) ++ pre (mirrorTree l2) ++ [a] ++ pre (mirrorTree r1) ++ pre (mirrorTree l1)       (By induction hypothesis)
+    [b] ++ [c] ++ reverse (post r2) ++ reverse (post l2) ++ [a] ++ reverse (post r1) ++ reverse (post l1)
+
+rhs:
+    [b] ++ [c] ++ reverse (post r2) ++ reverse (post l2) ++ [a] ++ reverse (post r1) ++ reverse (post l1)               (By definition of reverse)
+    reverse (post l1 ++ post r1 ++ [a] ++ post l2 ++ post r2 ++ [c] ++ [b])                                             (By inductive step of post)
+    reverse (post (Node l1 a r1) ++ post (Node l2 c r2) ++ [b])                                                         (By inductive step of post)
+    reverse (post (Node (Node l1 a r1) b (Node l2 c r2)))
+
 \end{verbatim}
 
 \item Question 10:
@@ -310,12 +328,4 @@ from fork     = debrancher fork []
         debrancher (Branch x (Leaf y)) roses = debrancher x [Rose y []]
         debrancher (Branch (Branch w x) (Branch y z)) roses = debrancher (Branch w x) [debrancher (Branch y z) roses]
 \end{code}    
-
-
-Bonus (Proof):
-Prove that ∀xs. to (from xs) = xs.
-\begin{verbatim}
-TODO
-\end{verbatim}
-
 \end{enumerate}
