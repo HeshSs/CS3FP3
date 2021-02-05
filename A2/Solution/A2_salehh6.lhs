@@ -176,10 +176,10 @@ data Expr' =
 
 show' :: Expr' -> String
 show' (Lit' a)   = "Lit' " ++ show a 
-show' (Add' a b) = "Add' (" ++ show a ++ ") (" ++ show b ++ ")"
-show' (Sub' a b) = "Sub' (" ++ show a ++ ") (" ++ show b ++ ")"
-show' (Mul' a b) = "Mul' (" ++ show a ++ ") (" ++ show b ++ ")"
-show' (Div' a b) = "Div' (" ++ show a ++ ") (" ++ show b ++ ")"
+show' (Add' a b) = "Add' (" ++ show' a ++ ") (" ++ show' b ++ ")"
+show' (Sub' a b) = "Sub' (" ++ show' a ++ ") (" ++ show' b ++ ")"
+show' (Mul' a b) = "Mul' (" ++ show' a ++ ") (" ++ show' b ++ ")"
+show' (Div' a b) = "Div' (" ++ show' a ++ ") (" ++ show' b ++ ")"
 
 size' :: Expr' -> Integer
 size' (Lit' a)   = 0
@@ -200,7 +200,34 @@ What does your function do when asked to perform a division by zero?\\
 Throws an exception with the message "division by zero"
 
 \item
-% TODO
+\begin{code}
+data Expr2 =
+     Lit2 Integer
+    | Op Ops Expr2 Expr2
+    deriving Show
+data Ops = Add | Sub | Mul | Div
+    deriving (Show, Eq)
+
+show2 :: Expr2 -> String
+show2 (Lit2 a)   = "Lit2 " ++ show a
+show2 (Op a b c) = "Op " ++ show a ++ " (" ++ show2 b ++ ") (" ++ show2 c ++ ")"
+
+size2 :: Expr2 -> Integer
+size2 (Lit2 a)   = 0
+size2 (Op a b c) = 1 + size2 b + size2 c
+
+eval2 :: Expr2 -> Integer
+eval2 (Lit2 a)   = a
+eval2 (Op a b c) 
+    | a == Add  = eval2 b + eval2 c
+    | a == Sub  = eval2 b - eval2 c
+    | a == Mul  = eval2 b * eval2 c
+    | a == Div  = div (eval2 b) (eval2 c)
+\end{code}
+
+This implementation is the most ideal, because if we were to add an extra operator Mod, 
+we only have to add an extra constructor in Ops, and only have to add a guard in eval2 method.
+The rest is taken care of for us already.
 
 \item
 % TODO
