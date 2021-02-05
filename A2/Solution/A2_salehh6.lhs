@@ -147,25 +147,60 @@ Therefore, P(xs) holds for all finite lists xs and functions f by weak induction
 \end{proof}
 
 \item
+% TODO
 
 \item
 \begin{code}
 data Expr =
-    Lit Integer
+      Lit Integer
     | Expr :+: Expr
     | Expr :-: Expr
+    deriving (Show)
 
 size :: Expr -> Integer
-size (Lit a) = 0
+size (Lit a)     = 0
 size (e1 :+: e2) = 1 + size e1 + size e2
 size (e1 :-: e2) = 1 + size e1 + size e2
+
+\end{code}
+
+\item 
+\begin{code}
+data Expr' =
+      Lit' Integer
+    | Add' Expr' Expr'
+    | Sub' Expr' Expr'
+    | Mul' Expr' Expr'
+    | Div' Expr' Expr'
+    deriving (Show)
+
+show' :: Expr' -> String
+show' (Lit' a)   = "Lit' " ++ show a 
+show' (Add' a b) = "Add' " ++ show a ++ " " ++ show b
+show' (Sub' a b) = "Sub' " ++ show a ++ " " ++ show b
+show' (Mul' a b) = "Mul' " ++ show a ++ " " ++ show b
+show' (Div' a b) = "Div' " ++ show a ++ " " ++ show b
+
+size' :: Expr' -> Integer
+size' (Lit' a)   = 0
+size' (Add' a b) = 1 + size' a + size' b
+size' (Sub' a b) = 1 + size' a + size' b
+size' (Mul' a b) = 1 + size' a + size' b
+size' (Div' a b) = 1 + size' a + size' b
+
+eval' :: Expr' -> Integer
+eval' (Lit' a)   = a
+eval' (Add' a b) = eval' a + eval' b
+eval' (Sub' a b) = eval' a - eval' b
+eval' (Mul' a b) = eval' a * eval' b
+eval' (Div' a b) = div (eval' a) (eval' b)
 \end{code}
 
 \item
+% TODO
 
 \item
-
-\item
+% TODO
 
 \end{enumerate}
 
