@@ -30,7 +30,9 @@ iter n f
     | otherwise = id                -- iter .2  
 \end{verbatim}
 
-We will prove that for all natural numbers n, \textbf{iter n id = id}
+We will prove that for all natural numbers n, 
+
+\textbf{iter n id = id}
 
 \begin{proof}
 Let P(n) = iter n id = id. We will prove P(n) for all $n \in \mathbb{N}$ by weak induction.
@@ -60,26 +62,32 @@ Therefore, P(n) holds for all $n \in \mathbb{N}$ by weak induction.
 map :: (a -> b) -> [a] -> [b]               
 map _ [] = []                   -- map .1   
 map f (x:xs) = f x : map f xs   -- map .2   
+                                            
+(++) :: [a] -> [a] -> [a]                   
+(++) []     ys = ys             -- (++) .1  
+(++) (x:xs) ys = x : xs ++ ys   -- (++) .2  
 \end{verbatim}
 
-We will prove that for all ys and zs, \textbf{map f (ys ++ zs) = map f ys ++ map f zs}
+We will prove that for all ys and zs, 
+
+\textbf{map f (ys ++ zs) = map f ys ++ map f zs}
 
 \begin{proof}
 Let P(ys) = map f (ys ++ zs) = map f ys ++ map f zs. We will prove P(ys) for all ys and zs by weak induction.
 
-Base case: $n = []$. We must show P([]):
+Base case: $ys = []$. We must show P([]):
 \begin{align*}
     &\phantom{{}=} \text{map f ([] ++ zs)} & \pnote{By identity of ++}\\
     &= \text{map f zs} & \pnote{By identity of ++}\\
     &= \text{[] ++ map f zs} & \pnote{By map .1}\\
     &= \text{map f [] ++ map f zs} 
 \end{align*}
-So $P(0)$ holds.
+So $P([])$ holds.
 
-Induction step: $n = (y:ys)$. We assume P(ys) and we must show $P(y:ys)$:
+Induction step: $ys = (y:ys)$. We assume P(ys) and we must show $P(y:ys)$:
 \begin{align*}
-    &\phantom{{}=} \text{map f ((y:ys) ++ zs)} & \pnote{By Mutual associativity of : and ++}\\
-    &= \text{map f (y:(ys ++ zs))} & \pnote{By map .2}\\
+    &\phantom{{}=} \text{map f ((y:ys) ++ zs)} & \pnote{By (++) .2}\\
+    &= \text{map f (y : (ys ++ zs))} & \pnote{By map .2}\\
     &= \text{f y : map f (ys ++ zs)} & \pnote{By induction hypothesis P(ys)}\\
     &= \text{f y : map f ys ++ map f zs} & \pnote{By map .2}\\
     &= \text{map f (y:ys) ++ map f zs}
@@ -89,7 +97,54 @@ So $P(y:ys)$ holds.
 Therefore, P(ys) holds for all ys and zs by weak induction.
 \end{proof}
 
-\item
+\item We have:
+\begin{verbatim}
+concat :: [[a]] -> [a]                                      
+concat = foldr (++) []  -- concat .1                        
+                                                            
+foldr :: (a -> b -> b) -> b -> [a] -> b                     
+foldr f s []     = s                        -- foldr .1     
+foldr f s (x:xs) = x `f` (foldr f s xs)     -- foldr .2     
+                                                            
+map and (++) are also defined in Q2.                        
+\end{verbatim}
+
+We will prove that for all finite lists xs and functions f, 
+
+\textbf{concat (map (map f) xs) = map f (concat xs)}
+
+\begin{proof}
+Let P(xs) = concat (map (map f) xs) = map f (concat xs). We will prove P(xs) for all finite lists xs and functions f by weak induction.
+
+Base case: $xs = []$. We must show P([]):
+\begin{align*}
+    &\phantom{{}=} \text{concat (map (map f) [])} & \pnote{By map .1}\\
+    &= \text{concat []} & \pnote{By concat .1}\\
+    &= \text{foldr (++) [] []} & \pnote{By foldr .1}\\
+    &= \text{[]} & \pnote{By map .1}\\
+    &= \text{map f []} & \pnote{By foldr .1}\\
+    &= \text{map f (foldr (++) [] [])} & \pnote{By concat .1}\\
+    &= \text{map f (concat [])} 
+\end{align*}
+So $P([])$ holds.
+
+Induction step: $xs = (x:xs)$. We assume P(xs) and we must show $P(x:xs)$:
+\begin{align*}
+    &\phantom{{}=} \text{concat (map (map f) (x:xs))} & \pnote{By concat .1}\\
+    &= \text{foldr (++) [] (map (map f) (x:xs))} & \pnote{By map .2}\\
+    &= \text{foldr (++) [] (map f x : (map (map f) xs))} & \pnote{By foldr .2}\\
+    &= \text{(map f x) ++ (foldr (++) [] (map (map f) xs))} & \pnote{By concat .1}\\
+    &= \text{(map f x) ++ (concat (map (map f) xs))} & \pnote{By Induction hypothesis P(xs)}\\
+    &= \text{(map f x) ++ (map f (concat xs))} & \pnote{By map .2}\\
+    &= \text{map f (x ++ (concat xs))} & \pnote{By concat .1}\\
+    &= \text{map f (x ++ (foldr (++) [] xs))} & \pnote{By foldr .2}\\
+    &= \text{map f (foldr (++) [] (x:xs))} & \pnote{By concat .1}\\
+    &= \text{map f (concat (x:xs))}
+\end{align*}
+So $P(x:xs)$ holds.
+
+Therefore, P(xs) holds for all finite lists xs and functions f by weak induction.
+\end{proof}
 
 \item
 
