@@ -149,6 +149,17 @@ Therefore, P(xs) holds for all finite lists xs and functions f by weak induction
 \item
 
 \item
+\begin{code}
+data Expr =
+    Lit Integer
+    | Expr :+: Expr
+    | Expr :-: Expr
+
+size :: Expr -> Integer
+size (Lit a) = 0
+size (e1 :+: e2) = 1 + size e1 + size e2
+size (e1 :-: e2) = 1 + size e1 + size e2
+\end{code}
 
 \item
 
