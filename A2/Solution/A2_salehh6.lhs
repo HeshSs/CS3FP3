@@ -176,10 +176,10 @@ data Expr' =
 
 show' :: Expr' -> String
 show' (Lit' a)   = "Lit' " ++ show a 
-show' (Add' a b) = "Add' " ++ show a ++ " " ++ show b
-show' (Sub' a b) = "Sub' " ++ show a ++ " " ++ show b
-show' (Mul' a b) = "Mul' " ++ show a ++ " " ++ show b
-show' (Div' a b) = "Div' " ++ show a ++ " " ++ show b
+show' (Add' a b) = "Add' (" ++ show a ++ ") (" ++ show b ++ ")"
+show' (Sub' a b) = "Sub' (" ++ show a ++ ") (" ++ show b ++ ")"
+show' (Mul' a b) = "Mul' (" ++ show a ++ ") (" ++ show b ++ ")"
+show' (Div' a b) = "Div' (" ++ show a ++ ") (" ++ show b ++ ")"
 
 size' :: Expr' -> Integer
 size' (Lit' a)   = 0
@@ -195,6 +195,9 @@ eval' (Sub' a b) = eval' a - eval' b
 eval' (Mul' a b) = eval' a * eval' b
 eval' (Div' a b) = div (eval' a) (eval' b)
 \end{code}
+
+What does your function do when asked to perform a division by zero?\\
+Throws an exception with the message "division by zero"
 
 \item
 % TODO
