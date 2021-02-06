@@ -230,6 +230,13 @@ we only have to add an extra constructor in Ops, and only have to add a guard in
 The rest is taken care of for us already.
 
 \item
+\begin{code}
+join :: (a -> c) -> (b -> d) -> Either a b -> Either c d
+join f1 _ (Left a) = Left (f1 a)
+join _ f2 (Right a) = Right (f2 a)
+\end{code}
+
+\item
 % TODO
 
 \end{enumerate}
