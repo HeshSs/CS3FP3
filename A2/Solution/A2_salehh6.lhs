@@ -147,7 +147,37 @@ Therefore, P(xs) holds for all finite lists xs and functions f by weak induction
 \end{proof}
 
 \item
-% TODO
+% We have:
+\begin{verbatim}
+filter :: (a -> Bool) -> [a] -> [a]                             
+filter _ []                 = []                -- filter .1    
+filter p (x:xs) | p x       = x : filter p xs   -- filter .2    
+                | otherwise = filter p xs       -- filter .3    
+\end{verbatim}
+
+We will prove that for all finite lists xs and all predicate functions p and q, 
+\begin{verbatim}
+filter p (filter q xs) = filter (p &&& q) xs    
+    where                                       
+        p &&& q = \x -> p x && q x              
+\end{verbatim}
+
+\begin{proof}
+Let P(xs) = filter p (filter q xs) = filter (\x -> p x && q x) xs. 
+We will prove P(xs) for all finite lists xs and all predicate functions p and q by weak induction.
+
+Base case: $xs = []$. We must show P([]):
+\begin{align*}
+    &\phantom{{}=} \text{filter p (filter q [])} & \pnote{By filter .1}\\
+    &= \text{filter p []} & \pnote{By filter .1}\\
+    &= \text{[]} & \pnote{By filter .1}\\
+    &= \text{filter (\x -> p x && q x) []} 
+\end{align*}
+So $P([])$ holds.
+
+
+
+\end{proof}
 
 \item
 \begin{code}
@@ -269,7 +299,6 @@ mapTree f (Gnode ls) = (Gnode (map (mapTree f) ls))
 flatten :: GTree a -> [a]
 flatten (Leaf a) = [a]
 flatten (Gnode ls) = foldr (++) [] (map flatten ls)
-
 \end{code}
 
 \end{enumerate}
