@@ -217,7 +217,7 @@ size2 (Lit2 a)   = 0
 size2 (Op a b c) = 1 + size2 b + size2 c
 
 eval2 :: Expr2 -> Integer
-eval2 (Lit2 a)   = a
+eval2 (Lit2 a)  = a
 eval2 (Op a b c) 
     | a == Add  = eval2 b + eval2 c
     | a == Sub  = eval2 b - eval2 c
@@ -232,31 +232,43 @@ The rest is taken care of for us already.
 \item
 \begin{code}
 join :: (a -> c) -> (b -> d) -> Either a b -> Either c d
-join f1 _ (Left a) = Left (f1 a)
+join f1 _ (Left a)  = Left (f1 a)
 join _ f2 (Right a) = Right (f2 a)
 \end{code}
 
 \item
 \begin{code}
-data GTree a = Leaf a | Gnode [GTree a]
+data GTree a = Leaf a | Gnode [GTree a] deriving (Show)
 
 -- Counts the number of leaves in a GTree
-
+count :: GTree a -> Integer
+count (Leaf _)   = 1
+count (Gnode ls) = foldr (+) 0 (map count ls)
 
 -- Finds the depth of a GTree
+depth :: GTree a -> Integer
+depth (Leaf _)  = 0
+depth (Gnode ls) = foldr (+) 1 (map depth ls)
 
-
--- Finds the sum of a numeric GTree Int
-
+-- Finds the sum of a numeric GTree Ints
+sum' :: Num a => GTree a -> a
+sum' (Leaf a) = a
+sum' (Gnode ls) = foldr (+) 0 (map sum' ls)
 
 -- Finds whether an element exists in a GTree
-
+contains :: Eq a => a -> GTree a -> Bool
+contains e (Leaf a) = e == a
+contains e (Gnode ls) = foldr (||) False (map (contains e) ls)
 
 -- Maps a function over the elements at the leaves of a GTree
+mapTree :: (a -> b) -> GTree a -> GTree b
+mapTree f (Leaf a) = (Leaf (f a))
+mapTree f (Gnode ls) = (Gnode (map (mapTree f) ls))
 
-
--- Flattens a GTree to a list
-
+-- Flattens (Breadth first) a GTree to a list
+flatten :: GTree a -> [a]
+flatten (Leaf a) = [a]
+flatten (Gnode ls) = foldr (++) [] (map flatten ls)
 
 \end{code}
 
