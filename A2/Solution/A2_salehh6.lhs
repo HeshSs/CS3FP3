@@ -175,8 +175,45 @@ Base case: $xs = []$. We must show P([]):
 \end{align*}
 So $P([])$ holds.
 
+Induction step: $xs = (x:xs)$. We assume P(xs) and we must show $P(x:xs)$:
 
+We do this by 2 cases:
 
+Case 1: p x and q x are both True, therefore we can use (filter .2):
+\begin{align*}
+    &\phantom{{}=} \text{filter p (filter q (x:xs))} & \pnote{By filter .2}\\
+    &= \text{filter p (filter q (x:xs))} & \pnote{By map .2}\\
+
+    &= \text{filter (\x -> p x && q x) (x:xs)}
+\end{align*}
+
+Case 2: p x and q x are both False, therefore we can use (filter .3):
+\begin{align*}
+    &\phantom{{}=} \text{filter p (filter q (x:xs))} & \pnote{By concat .1}\\
+    &= \text{filter p (filter q (x:xs))} & \pnote{By map .2}\\
+
+    &= \text{filter (\x -> p x && q x) (x:xs)}
+\end{align*}
+
+Case 3: p x True but q x is False, therefore we can use (filter .3):
+\begin{align*}
+    &\phantom{{}=} \text{filter p (filter q (x:xs))} & \pnote{By concat .1}\\
+    &= \text{filter p (filter q (x:xs))} & \pnote{By map .2}\\
+
+    &= \text{filter (\x -> p x && q x) (x:xs)}
+\end{align*}
+
+Case 4: p x False but q x is True, therefore we can use (filter .3):
+\begin{align*}
+    &\phantom{{}=} \text{filter p (filter q (x:xs))} & \pnote{By concat .1}\\
+    &= \text{filter p (filter q (x:xs))} & \pnote{By map .2}\\
+
+    &= \text{filter (\x -> p x && q x) (x:xs)}
+\end{align*}
+
+Since the 4 cases cover all possible combination of p x and q x, $P(x:xs)$ holds.
+
+Therefore, P(xs) holds for all finite lists xs and all predicate functions p and q by weak induction.
 \end{proof}
 
 \item
