@@ -237,7 +237,28 @@ join _ f2 (Right a) = Right (f2 a)
 \end{code}
 
 \item
-% TODO
+\begin{code}
+data GTree a = Leaf a | Gnode [GTree a]
+
+-- Counts the number of leaves in a GTree
+
+
+-- Finds the depth of a GTree
+
+
+-- Finds the sum of a numeric GTree Int
+
+
+-- Finds whether an element exists in a GTree
+
+
+-- Maps a function over the elements at the leaves of a GTree
+
+
+-- Flattens a GTree to a list
+
+
+\end{code}
 
 \end{enumerate}
 
