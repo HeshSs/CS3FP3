@@ -163,53 +163,59 @@ filter p (filter q xs) = filter (p &&& q) xs
 \end{verbatim}
 
 \begin{proof}
-Let P(xs) = filter p (filter q xs) = filter (\x -> p x && q x) xs. 
+
+\begin{verbatim}
+        Let P(xs) = filter p (filter q xs) = filter (\x -> p x && q x) xs, by substituting          
+(p &&& q = \x -> p x && q x) into (filter p (filter q xs) = filter (p &&& q) xs).                   
+\end{verbatim}
 We will prove P(xs) for all finite lists xs and all predicate functions p and q by weak induction.
 
 Base case: $xs = []$. We must show P([]):
-\begin{align*}
-    &\phantom{{}=} \text{filter p (filter q [])} & \pnote{By filter .1}\\
-    &= \text{filter p []} & \pnote{By filter .1}\\
-    &= \text{[]} & \pnote{By filter .1}\\
-    &= \text{filter (\x -> p x && q x) []} 
-\end{align*}
+\begin{verbatim}
+    filter p (filter q [])          <By filter .1>  
+    filter p []                     <By filter .1>  
+    []                              <By filter .1>  
+    filter (\x -> p x && q x) []                    
+\end{verbatim}
 So $P([])$ holds.
 
 Induction step: $xs = (x:xs)$. We assume P(xs) and we must show $P(x:xs)$:
 
-We do this by 2 cases:
+We do this by 4 cases:
 
 Case 1: p x and q x are both True, therefore we can use (filter .2):
-\begin{align*}
-    &\phantom{{}=} \text{filter p (filter q (x:xs))} & \pnote{By filter .2}\\
-    &= \text{filter p (filter q (x:xs))} & \pnote{By map .2}\\
-
-    &= \text{filter (\x -> p x && q x) (x:xs)}
-\end{align*}
+\begin{verbatim}
+    filter p (filter q (x:xs))              <By filter .2>                      
+    filter p (x : filter q xs)              <By filter .2>                      
+    x : filter p (filter q xs)              <By Induction hypothesis P(xs)>     
+    x : filter (\x -> p x && q x) xs        <By filter .2 and p x = q x = True> 
+    filter (\x -> p x && q x) (x:xs)                                            
+\end{verbatim}
 
 Case 2: p x and q x are both False, therefore we can use (filter .3):
-\begin{align*}
-    &\phantom{{}=} \text{filter p (filter q (x:xs))} & \pnote{By concat .1}\\
-    &= \text{filter p (filter q (x:xs))} & \pnote{By map .2}\\
+\begin{verbatim}
+    filter p (filter q (x:xs))          <By filter .3>                          
+    filter p (filter q xs)              <By Induction hypothesis P(xs)>         
+    filter (\x -> p x && q x) xs        <By filter .3 and p x = q x = True>     
+    filter (\x -> p x && q x) (x:xs)                                            
+\end{verbatim}
 
-    &= \text{filter (\x -> p x && q x) (x:xs)}
-\end{align*}
+Case 3: p x True but q x is False, therefore we can use (filter .2) for p x and (filter .3) for q x:
+\begin{verbatim}
+    filter p (filter q (x:xs))              <By filter .3>                              
+    filter p (filter q xs)                  <By Induction hypothesis P(xs)>             
+    filter (\x -> p x && q x) xs            <By filter .3 and True && False = False>    
+    filter (\x -> p x && q x) (x:xs)                                                    
+\end{verbatim}
 
-Case 3: p x True but q x is False, therefore we can use (filter .3):
-\begin{align*}
-    &\phantom{{}=} \text{filter p (filter q (x:xs))} & \pnote{By concat .1}\\
-    &= \text{filter p (filter q (x:xs))} & \pnote{By map .2}\\
-
-    &= \text{filter (\x -> p x && q x) (x:xs)}
-\end{align*}
-
-Case 4: p x False but q x is True, therefore we can use (filter .3):
-\begin{align*}
-    &\phantom{{}=} \text{filter p (filter q (x:xs))} & \pnote{By concat .1}\\
-    &= \text{filter p (filter q (x:xs))} & \pnote{By map .2}\\
-
-    &= \text{filter (\x -> p x && q x) (x:xs)}
-\end{align*}
+Case 4: p x False but q x is True, therefore we can use (filter .3) for p x and (filter .2) for q x:
+\begin{verbatim}
+    filter p (filter q (x:xs))                  <By filter .2>                              
+    filter p (x : filter q xs)                  <By filter .3>                              
+    filter p (filter q xs)                      <By Induction hypothesis P(xs)>             
+    filter (\x -> p x && q x) xs                <By filter .3 and False && True = False>    
+    filter (\x -> p x && q x) (x:xs)                                                        
+\end{verbatim}
 
 Since the 4 cases cover all possible combination of p x and q x, $P(x:xs)$ holds.
 
