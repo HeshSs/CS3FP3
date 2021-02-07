@@ -7,6 +7,7 @@
 \usepackage{amsthm}
 \usepackage{amsmath}
 \usepackage{amssymb}
+\usepackage{hyperref}
 
 \newcommand{\pnote}[1]{{\langle \text{#1} \rangle}}
 
@@ -345,5 +346,12 @@ flatten (Gnode ls) = foldr (++) [] (map flatten ls)
 \end{code}
 
 \end{enumerate}
+
+\newpage
+
+\section*{References}
+Q2-4) \href{https://gist.github.com/YusukeHosonuma/13d83bee3c9dd01863b6c020336b4294}{map and filter source}\\
+Q3) \href{https://gitlab.cas.mcmaster.ca/carette/3fp3-w2021}{foldr source}
+Q2) \href{https://stackoverflow.com/questions/1817865/haskell-and-differences#:~:text=The%20%2B%2B%20operator%20is%20the,get%20%5Bx%2C%20y%20%5D.&text=The%20reverse%20function%20evaluates%20to%20a%20list.}{(++) source}
 
 \end{document}
