@@ -69,7 +69,7 @@ link x y = if x == y then [] else [("... ??? ...", y)]
 -- (x, [(r1, y1), …, (rN,yN)]) -> (yN, [(rN, yN-1), …, (r2, y1), (r1, x)])
 -- (x, []) -> (x, [])
 reverseCalc :: Calculation -> Calculation
-reverseCalc (x, ss) = todo "conslution"
+reverseCalc (x, ss) = todo "reverseCalc"
 
 -- Paste two calculations together; the second being reversed.
 -- Insert an indication if the conclusions are not the same.

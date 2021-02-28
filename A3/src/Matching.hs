@@ -19,14 +19,39 @@ binding ((u, e) : s) v = if u == v then e else binding s v
 
 -- Apply a substitution to an expression.
 -- Example:
--- applySub [("x", pair(a, b)), ("y", fst)] (x . y) = pair (a, b) . fst
--- applySub [("x", this), ("y", that)] (fst . snd) = fst . snd
+-- applySubst [("x", pair(a, b)), ("y", fst)] (x . y) = pair (a, b) . fst
+-- applySubst [("x", this), ("y", that)] (fst . snd) = fst . snd
 --   where x = Var "x"
 --         y = Var "y"
 applySubst :: Subst -> Expr -> Expr
 applySubst s (Var v) = binding s v
 applySubst s (Con f xs) = todo "applySubst1"
 applySubst s (Compose xs) = todo "applySubst2"
+
+-- Yield all partitions of a sequence into a list of ‘m’ subsequences,
+-- Don't allow empty subsequence if the sequence is not empty
+-- Why the result of type is [[[a]]]:
+--   * [a] is the type of subsequence
+--   * [subsequence] = [[a]] type of partition - the list of subsequence
+--   * [partition] = [[[a]]] type of partitions list
+-- Example:
+-- > parts 2 [1, 2, 3, 4]
+-- [ [ [1] , [2,3,4] ]
+-- , [ [1,2] , [3,4] ]
+-- , [ [1,2,3] , [4] ]
+-- ]
+parts :: Int -> [a] -> [[[a]]]
+-- Base case
+parts 0 [] = [[]]
+parts 0 xs = []
+-- No partitions of empty sequence into m > 0 components.
+parts m [] = []
+parts m (x : xs) = case1 ++ case2
+  where
+    -- Case 1: x alone in the partition
+    case1 = todo "case1"
+    -- Case 2: x in the same partition with adjacent elements
+    case2 = todo "case2"
 
 -- match a pattern against an expressions, return a list of substitutions
 -- Why a [Subst] instead of Subst? Because a pattern can match an expression in different ways
@@ -69,32 +94,6 @@ xmatch _ (Compose _) (Con _ _) = []
 -- aligned segments does.
 xmatch base (Compose patterns) (Compose exprs) = concatMap (xmatchlist base) (alignCompose patterns exprs)
   where
-    -- Yield all partitions of a sequence into a list of ‘m’ subsequence,
-    -- Don't allow empty subsequence if the sequence is not empty
-    -- This could be an one of your future job interview coding problem (or similar to this),
-    -- make sure you understand it.
-    -- Why the result of type is [[[a]]]:
-    --   * [a] is the type of subsequence
-    --   * [subsequence] = [[a]] type of partition - the list of subsequence
-    --   * [partition] = [[[a]]] type of partitions list
-    -- Example:
-    -- > parts 2 [1, 2, 3, 4]
-    -- [ [ [1] , [2,3,4] ]
-    -- , [ [1,2] , [3,4] ]
-    -- , [ [1,2,3] , [4] ]
-    -- ]
-    parts :: Int -> [a] -> [[[a]]]
-    -- Base case
-    parts 0 [] = [[]]
-    parts 0 xs = []
-    -- No partitions of empty sequence into m > 0 components.
-    parts m [] = []
-    parts m (x : xs) = case1 ++ case2
-      where
-        -- Case 1: x alone a partition
-        case1 = todo "case1"
-        -- Case 2: x in the same partition with adjacent elements
-        case2 = todo "case2"
     -- Different ways to align a list of composed patterns against a list of composed expressions
     -- Example:
     -- > alignCompose [x, y] [f, zip (a, b), h]

@@ -45,7 +45,7 @@ printExpr (Compose xs) = foldl1 (\x y -> x ++ " . " ++ y) (map printExpr xs)
 --    * length xs >= 2
 --    * xs itself has no element in the form `Compose ys`
 -- Example:
--- compose [Var "x"] = Var "x"
+-- compose [Var 'x'] = Var 'x'
 -- compose [Con "zip" [x, y]] = Con "zip" [x, y]
 -- compose [a, b] = Compose [a, b]
 -- compose [Compose [a, b], Compose [c, d, e], d, e] = Compose [a, b, c, d, e, d, e]
