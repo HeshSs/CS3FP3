@@ -20,7 +20,11 @@ instance Show Law where
 -- | Basic laws are laws that has 
 -- LHS expression has complexity > RHS expression's complexity
 basicLaw :: Law -> Bool
-basicLaw (Law _ lhs rhs) = todo "basicLaw"
+basicLaw (Law _ lhs rhs) = countSymbols lhs > countSymbols rhs
+  where 
+    countSymbols (Var _) = 1
+    countSymbols (Con _ es) = foldr (+) 1 (map countSymbols es)
+    countSymbols (Compose es) = foldr (+) 1 (map countSymbols es)
 
 eqn :: Parser (Expr, Expr)
 eqn = do
