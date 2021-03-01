@@ -50,7 +50,16 @@ printExpr (Compose xs) = foldl1 (\x y -> x ++ " . " ++ y) (map printExpr xs)
 -- compose [a, b] = Compose [a, b]
 -- compose [Compose [a, b], Compose [c, d, e], d, e] = Compose [a, b, c, d, e, d, e]
 compose :: [Expr] -> Expr
-compose xs = todo "compose"
+compose [] = error "Cannot be applied to empty list."
+compose (x:xs) = case (x, xs) of 
+  (Var a, [])                -> Var a
+  (Con a es, [])             -> Con a es
+  (Var a, ys@(b:bs))         -> Compose (Var a : composeHelper ys)
+  (Con a es, ys@(b:bs))      -> Compose (Con a es : composeHelper ys)
+  (Compose as, ys@(b:bs))    -> Compose (composeHelper (as ++ ys))
+  where
+    composeHelper ((Compose as):zs) = as ++ composeHelper zs
+    composeHelper xs = xs
 
 -- | Our `complexity` is defined to be the number of composed functions
 complexity :: Expr -> Int
