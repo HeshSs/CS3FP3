@@ -77,9 +77,6 @@ reverseCalc (x, ss) = if null ss then (x, ss) else (snd (last ss), zip fsts snds
   where fsts = reverse (map fst ss)
         snds = reverse (map snd (take (length ss - 1) ss)) ++ [x]
 
--- (snd (last ss), [ pair | pair <- zip a, a <- reverse (map fst ss), b <- reverse (map snd (take (length ss - 1) ss)) ++ [x]])
---  (snd (last ss), [(a, b) | (pair, i) <- zip ss [0..]] ++ [(fst (head ss), x)])
-
 -- Paste two calculations together; the second being reversed.
 -- Insert an indication if the conclusions are not the same.
 -- Use `link` and `reverseCalc`
