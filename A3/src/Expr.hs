@@ -54,11 +54,11 @@ compose [] = error "Cannot be applied to empty list."
 compose (x:xs) = case (x, xs) of 
   (Var a, [])               -> Var a
   (Con a es, [])            -> Con a es
-  (Var a, ys)               -> Compose (Var a : composeHelper ys)
-  (Con a es, ys)            -> Compose (Con a es : composeHelper ys)
-  (Compose as, ys@(b:bs))   -> Compose (composeHelper as ++ composeHelper ys)
+  (Var a, ys@(b:bs))               -> Compose (Var a : composeHelper ys)
+  (Con a es, ys@(b:bs))            -> Compose (Con a es : composeHelper ys)
+  (Compose as@(m1:m2:ms), ys@(b:bs))   -> Compose (composeHelper as ++ composeHelper ys)
   where
-    composeHelper ((Compose as):zs) = as ++ composeHelper zs
+    composeHelper ((Compose as@(m1:m2:ms)):zs) = as ++ composeHelper zs
     composeHelper ((Var a):zs) = Var a : composeHelper zs
     composeHelper ((Con a es):zs) = Con a es : composeHelper zs
     composeHelper [] = []
