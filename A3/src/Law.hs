@@ -63,7 +63,7 @@ type Step = (LawName, Expr)
 -- (x, [(rule1, y1), …, (ruleN,yN)]) -> yN
 -- (x, []) -> x
 conclusion :: Calculation -> Expr
-conclusion (x, steps) = todo "conclusion"
+conclusion (x, steps) = if null steps then x else snd (last steps)
 
 -- Insert an indication if the conclusions are not the same.
 link :: Expr -> Expr -> [Step]
