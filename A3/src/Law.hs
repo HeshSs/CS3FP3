@@ -73,7 +73,12 @@ link x y = if x == y then [] else [("... ??? ...", y)]
 -- (x, [(r1, y1), …, (rN,yN)]) -> (yN, [(rN, yN-1), …, (r2, y1), (r1, x)])
 -- (x, []) -> (x, [])
 reverseCalc :: Calculation -> Calculation
-reverseCalc (x, ss) = todo "reverseCalc"
+reverseCalc (x, ss) = if null ss then (x, ss) else (snd (last ss), zip fsts snds)
+  where fsts = reverse (map fst ss)
+        snds = reverse (map snd (take (length ss - 1) ss)) ++ [x]
+
+-- (snd (last ss), [ pair | pair <- zip a, a <- reverse (map fst ss), b <- reverse (map snd (take (length ss - 1) ss)) ++ [x]])
+--  (snd (last ss), [(a, b) | (pair, i) <- zip ss [0..]] ++ [(fst (head ss), x)])
 
 -- Paste two calculations together; the second being reversed.
 -- Insert an indication if the conclusions are not the same.
