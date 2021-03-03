@@ -52,10 +52,13 @@ parts m list@(x : xs)
   | m <= length list = case1 ++ case2
   where
     -- Case 1: x alone in the partition
-    case1 = case1Helper x xs
+    case1 = todo "case1"
 
     -- Case 2: x in the same partition with adjacent elements
-    case2 = case2Helper [x] xs
+    case2 = todo "case2"
+
+    -- The helper method that subsequences a given list
+    subsequencer ls rs = [ls, rs]
 
 -- match a pattern against an expressions, return a list of substitutions
 -- Why a [Subst] instead of Subst? Because a pattern can match an expression in different ways
