@@ -22,8 +22,8 @@ instance Show Law where
 basicLaw :: Law -> Bool
 basicLaw (Law _ lhs rhs) = countSymbols lhs > countSymbols rhs
   where 
-    countSymbols (Var _) = 1
-    countSymbols (Con _ es) = foldr (+) 1 (map countSymbols es)
+    countSymbols (Var _)      = 1
+    countSymbols (Con _ es)   = foldr (+) 1 (map countSymbols es)
     countSymbols (Compose es) = foldr (+) 1 (map countSymbols es)
 
 eqn :: Parser (Expr, Expr)

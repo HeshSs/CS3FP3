@@ -24,8 +24,8 @@ binding ((u, e) : s) v = if u == v then e else binding s v
 --   where x = Var "x"
 --         y = Var "y"
 applySubst :: Subst -> Expr -> Expr
-applySubst s (Var v) = binding s v
-applySubst s (Con f xs) = Con f (map (applySubst s) xs)
+applySubst s (Var v)      = binding s v
+applySubst s (Con f xs)   = Con f (map (applySubst s) xs)
 applySubst s (Compose xs) = Compose (map (applySubst s) xs)
 
 -- Yield all partitions of a sequence into a list of ‘m’ subsequences,
@@ -47,8 +47,8 @@ parts 0 xs = []
 -- No partitions of empty sequence into m > 0 components.
 parts m [] = []
 parts m list@(x : xs)
-  | m == 1 = [[x:xs]]
-  | m > length list = []
+  | m == 1           = [[x:xs]]
+  | m > length list  = []
   | m <= length list = case1 ++ case2
   where
     -- Case 1: x alone in the partition
