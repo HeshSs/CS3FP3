@@ -25,8 +25,8 @@ binding ((u, e) : s) v = if u == v then e else binding s v
 --         y = Var "y"
 applySubst :: Subst -> Expr -> Expr
 applySubst s (Var v) = binding s v
-applySubst s (Con f xs) = todo "applySubst1"
-applySubst s (Compose xs) = todo "applySubst2"
+applySubst s (Con f xs) = Con f (map (applySubst s) xs)
+applySubst s (Compose xs) = Compose (map (applySubst s) xs)
 
 -- Yield all partitions of a sequence into a list of ‘m’ subsequences,
 -- Don't allow empty subsequence if the sequence is not empty
