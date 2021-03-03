@@ -46,12 +46,16 @@ parts 0 [] = [[]]
 parts 0 xs = []
 -- No partitions of empty sequence into m > 0 components.
 parts m [] = []
-parts m (x : xs) = case1 ++ case2
+parts m list@(x : xs)
+  | m == 1 = [[x:xs]]
+  | m > length list = []
+  | m <= length list = case1 ++ case2
   where
     -- Case 1: x alone in the partition
-    case1 = todo "case1"
+    case1 = case1Helper x xs
+
     -- Case 2: x in the same partition with adjacent elements
-    case2 = todo "case2"
+    case2 = case2Helper [x] xs
 
 -- match a pattern against an expressions, return a list of substitutions
 -- Why a [Subst] instead of Subst? Because a pattern can match an expression in different ways
