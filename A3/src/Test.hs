@@ -99,7 +99,7 @@ t15 =
   parts 5 [1, 2, 3, 4]
     == []
 
--- More `parts` tests
+-- More tests for `parts`
 
 t16 =
   parts 2 [1, 2, 3, 4, 5]

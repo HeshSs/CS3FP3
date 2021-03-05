@@ -55,9 +55,8 @@ parts m list@(x : xs)
     case1 = [[x]:l | l <- parts (m-1) xs]
 
     -- Case 2: x in the same partition with adjacent elements
-    case2 = []
-
-    -- The helper method that subsequences a given list
+    -- Some help was taken from https://mail.haskell.org/pipermail/beginners/2011-April/006832.html
+    case2 = [(x:y):ys | (y:ys) <- parts m xs]
 
 -- match a pattern against an expressions, return a list of substitutions
 -- Why a [Subst] instead of Subst? Because a pattern can match an expression in different ways
