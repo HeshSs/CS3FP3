@@ -117,7 +117,65 @@ t17 =
         [[1, 2], [3, 4], [5]], 
         [[1, 2, 3], [4], [5]]]
 
--- TODO: tests for the remaining functions
+-- Tests for the remaining functions
+-------------------------------------------------------------------------------
+
+-- | `intervals`
+
+intervals_test0 = intervals (parts 4 [1,2,3,4]) == [(0,1),(1,1),(2,1),(3,1)]
+
+intervals_test1 = intervals (parts 3 [1,2,3,4]) == [(0,1),(1,1),(2,2),(0,1),(1,2),(2,1),(0,2),(1,1),(2,1)]
+
+intervals_test2 :: Bool
+intervals_test2 = intervals (parts 2 [1,2,3]) == [(0,1),(1,2),(0,2),(1,1)]
+
+-------------------------------------------------------------------------------
+
+-- | `contains`
+
+contains_test0 = contains (1,2) (intervals (parts 3 [1,2,3,4]))
+
+contains_test1 = not $ contains (4,2) (intervals (parts 3 [1,2,3,4]))
+
+contains_test2 = contains (4,2) (intervals (parts 5 [1..10]))
+
+-------------------------------------------------------------------------------
+
+-- | `uniqIntervals`
+
+uniqIntervals_test0 = uniqIntervals (intervals (parts 4 [1,2,3,4])) [] == intervals (parts 4 [1,2,3,4])
+
+uniqIntervals_test1 = uniqIntervals (intervals (parts 3 [1,2,3,4])) [] == [(0,1),(1,1),(2,2),(1,2),(2,1),(0,2)]
+
+uniqIntervals_test2 = uniqIntervals (intervals (parts 2 [1,2,3])) [] == intervals (parts 2 [1,2,3])
+
+-------------------------------------------------------------------------------
+
+-- | `subList`
+
+subList_test0 = subList 0 10 [1..10] == [1..10]
+
+subList_test1 = subList 5 10 [1..10] == [6..10]
+
+subList_test2 = subList 10 1 [0..10] == [10]
+
+-------------------------------------------------------------------------------
+
+-- | `segments`
+
+segments_test0 = segments [Compose [a, b]] == [SubExpr (Compose [a, b]) All]
+
+segments_test1 = segments [Compose [a, b], Compose [c, d]] == todo ""
+
+segments_test2 = segments [Compose [c, d, e], d, e] == todo ""
+
+segments_test3 = segments [Compose [a, b], Compose [c, d], d, e] == todo ""
+
+
+-------------------------------------------------------------------------------
+
+-- | `parts`
+
 -------------------------------------------------------------------------------
 laws, filters, ifs, pairs, others :: [Law]
 laws = filters ++ ifs ++ pairs ++ others

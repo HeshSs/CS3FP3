@@ -22,13 +22,14 @@ data Location
     --  `Arg 3 (Seg 0 2)` refers to `Compose [x, y]`
     --  `Arg 0 All` refers to `f`
     Arg Int Location
-  deriving (Show)
+  deriving (Show, Eq)
 
 -- Subexpression in their parent expressions.
 data SubExpr
   = SubExpr
       Expr -- The subexpression
       Location -- Location of the subexpression w.r.t its parent
+      deriving (Eq)
 
 instance Show SubExpr where
   show (SubExpr e loc) = "subexpression " ++ show e ++ " located at " ++ show loc
@@ -75,6 +76,7 @@ subList a b xs = take b (drop a xs)
 -- args :: [Expr] -> [SubExpr], used for both Con and Compose
 args :: [Expr] -> [SubExpr]
 args = todo "args"
+
 -- segments :: [Expr] -> [SubExpr], used for Compose
 segments :: [Expr] -> [SubExpr]
 segments es = SubExpr (Compose es) All:[SubExpr (Compose (subList a b es)) (Seg a b) | (a, b) <- filteredSegments, length es /= b]
