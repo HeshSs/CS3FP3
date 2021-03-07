@@ -77,7 +77,10 @@ subList a b xs = take b (drop a xs)
 
 -- args :: [Expr] -> [SubExpr], used for both Con and Compose
 args :: [Expr] -> [SubExpr]
-args = todo "args"
+args es = [SubExpr (head (subList a b es)) (Arg a All) | (a, b) <- filteredSegments]
+  where
+    filteredSegments = filter (\(_, b) -> b == 1) allIntervals
+    allIntervals = uniqIntervals (intervals (concat [parts i es | i <- [1..(length es)]])) []
 
 -- segments :: [Expr] -> [SubExpr], used for Compose
 segments :: [Expr] -> [SubExpr]
