@@ -29,12 +29,10 @@ data SubExpr
   = SubExpr
       Expr -- The subexpression
       Location -- Location of the subexpression w.r.t its parent
-
+    deriving (Eq)
+    
 instance Show SubExpr where
   show (SubExpr e loc) = "subexpression " ++ show e ++ " located at " ++ show loc
-
-instance Eq SubExpr where
-  (==) (SubExpr e1 loc1) (SubExpr e2 loc2) = e1 == e2 && loc1 == loc2
 
 -- | All SubExprs of a given expression
 -- Example
