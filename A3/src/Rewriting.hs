@@ -51,20 +51,22 @@ instance Show SubExpr where
 -- subexpression q                         located at Arg 2 (Arg 1 (Arg 1 All))
 -- Hint: you might want to have two auxiliary function:
 -- Finds all the intervals given a list of partitions
-intervals :: (Num b, Enum b) => [[[a]]] -> [(b, Int)]
+intervals :: (Eq b, Num b, Enum b) => [[[a]]] -> [(b, Int)]
 intervals []     = []
 intervals (e:es) = [(i, length a) | (a, i) <- indexed] ++ intervals es
   where
     indexed = zip e [0..]
 
-contains :: (Num b, Enum b) => [(b, Int)] -> Bool 
-contains = todo "contains"
+-- Checks if a list of pairs contains a pair
+contains :: (Eq b, Num b, Enum b) => (b, Int) -> [(b, Int)] -> Bool
+contains (a, b) []          = False
+contains (a, b) ((c, d):xs) = (a == c && b == d) || contains (a, b) xs
 
 -- Finds all the unique intervals given a list of intervals
-uniqIntervals :: (Num b, Enum b) => [(b, Int)] -> [(b, Int)] -> [(b, Int)]
-uniqIntervals (e:es) [] = todo "uniqIntervals"
-
-  -- concat [parts i es | i <- [1..(length es)]]
+uniqIntervals :: (Eq b, Num b, Enum b) => [(b, Int)] -> [(b, Int)] -> [(b, Int)]
+uniqIntervals (e:es) [] = uniqIntervals es [e]
+uniqIntervals (e:es) xs = if contains e xs then uniqIntervals es xs else uniqIntervals es (xs ++ [e])
+uniqIntervals [] xs     = xs
 
 -- args :: [Expr] -> [SubExpr], used for both Con and Compose
 args :: [Expr] -> [SubExpr]
