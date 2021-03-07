@@ -68,13 +68,18 @@ uniqIntervals (e:es) [] = uniqIntervals es [e]
 uniqIntervals (e:es) xs = if contains e xs then uniqIntervals es xs else uniqIntervals es (xs ++ [e])
 uniqIntervals [] xs     = xs
 
+-- Takes b elements starting at index a from list xs
+subList :: Int -> Int -> [a] -> [a]
+subList a b xs = take b (drop a xs)
+
 -- args :: [Expr] -> [SubExpr], used for both Con and Compose
 args :: [Expr] -> [SubExpr]
 args = todo "args"
 -- segments :: [Expr] -> [SubExpr], used for Compose
 segments :: [Expr] -> [SubExpr]
-segments es = todo "segments"
+segments es = SubExpr (Compose es) All:[SubExpr (Compose (subList a b es)) (Seg a b) | (a, b) <- filteredSegments, length es /= b]
   where
+    filteredSegments = filter (\(_, b) -> b >= 2) allIntervals
     allIntervals = uniqIntervals (intervals (concat [parts i es | i <- [1..(length es)]])) []
 
 subExprs :: Expr -> [SubExpr]
