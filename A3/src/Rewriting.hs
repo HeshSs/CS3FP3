@@ -29,10 +29,12 @@ data SubExpr
   = SubExpr
       Expr -- The subexpression
       Location -- Location of the subexpression w.r.t its parent
-      deriving (Eq)
 
 instance Show SubExpr where
   show (SubExpr e loc) = "subexpression " ++ show e ++ " located at " ++ show loc
+
+instance Eq SubExpr where
+  (==) (SubExpr e1 loc1) (SubExpr e2 loc2) = e1 == e2 && loc1 == loc2
 
 -- | All SubExprs of a given expression
 -- Example
@@ -79,7 +81,7 @@ args = todo "args"
 
 -- segments :: [Expr] -> [SubExpr], used for Compose
 segments :: [Expr] -> [SubExpr]
-segments es = SubExpr (Compose es) All:[SubExpr (Compose (subList a b es)) (Seg a b) | (a, b) <- filteredSegments, length es /= b]
+segments es = SubExpr (compose es) All:[SubExpr (Compose (subList a b es)) (Seg a b) | (a, b) <- filteredSegments, length es /= b]
   where
     filteredSegments = filter (\(_, b) -> b >= 2) allIntervals
     allIntervals = uniqIntervals (intervals (concat [parts i es | i <- [1..(length es)]])) []

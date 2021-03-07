@@ -157,19 +157,23 @@ subList_test0 = subList 0 10 [1..10] == [1..10]
 
 subList_test1 = subList 5 10 [1..10] == [6..10]
 
+subList_test2 :: Bool
 subList_test2 = subList 10 1 [0..10] == [10]
 
 -------------------------------------------------------------------------------
 
 -- | `segments`
 
-segments_test0 = segments [Compose [a, b]] == [SubExpr (Compose [a, b]) All]
+segments_test0 = segments [a, b] == [SubExpr (Compose [a, b]) All]
 
-segments_test1 = segments [Compose [a, b], Compose [c, d]] == todo ""
+segments_test1 = segments [a, b, c] == [SubExpr (Compose [a, b, c]) All, SubExpr (Compose [b, c]) (Seg 1 2), SubExpr (Compose [a, b]) (Seg 0 2)]
 
-segments_test2 = segments [Compose [c, d, e], d, e] == todo ""
-
-segments_test3 = segments [Compose [a, b], Compose [c, d], d, e] == todo ""
+segments_test2 = segments [a, b, c, d] == [SubExpr (Compose [a, b, c, d]) All,
+                                           SubExpr (Compose [b, c, d]) (Seg 1 3),
+                                           SubExpr (Compose [a, b]) (Seg 0 2),
+                                           SubExpr (Compose [b, c]) (Seg 1 2),
+                                           SubExpr (Compose [a, b, c]) (Seg 0 3),
+                                           SubExpr (Compose [c, d]) (Seg 2 2)]
 
 
 -------------------------------------------------------------------------------
