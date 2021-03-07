@@ -50,10 +50,35 @@ instance Show SubExpr where
 -- subexpression p                         located at Arg 2 (Arg 1 (Arg 0 All))
 -- subexpression q                         located at Arg 2 (Arg 1 (Arg 1 All))
 -- Hint: you might want to have two auxiliary function:
+-- Finds all the intervals given a list of partitions
+intervals :: (Num b, Enum b) => [[[a]]] -> [(b, Int)]
+intervals []     = []
+intervals (e:es) = [(i, length a) | (a, i) <- indexed] ++ intervals es
+  where
+    indexed = zip e [0..]
+
+contains :: (Num b, Enum b) => [(b, Int)] -> Bool 
+contains = todo "contains"
+
+-- Finds all the unique intervals given a list of intervals
+uniqIntervals :: (Num b, Enum b) => [(b, Int)] -> [(b, Int)] -> [(b, Int)]
+uniqIntervals (e:es) [] = todo "uniqIntervals"
+
+  -- concat [parts i es | i <- [1..(length es)]]
+
 -- args :: [Expr] -> [SubExpr], used for both Con and Compose
+args :: [Expr] -> [SubExpr]
+args = todo "args"
 -- segments :: [Expr] -> [SubExpr], used for Compose
+segments :: [Expr] -> [SubExpr]
+segments es = todo "segments"
+  where
+    allIntervals = uniqIntervals (intervals (concat [parts i es | i <- [1..(length es)]])) []
+
 subExprs :: Expr -> [SubExpr]
-subExprs = todo "subExprs"
+subExprs (Var x) = todo "var" -- Var x
+subExprs (Con n (x:xs)) = todo "subCon"
+subExprs (Compose (x:xs)) = todo "subCom"
 
 
 -- | Replacing a subexpression of expression ~e~ at a location ~loc~ with a replacement expression ~r~.
