@@ -75,6 +75,10 @@ uniqIntervals [] xs     = xs
 subList :: Int -> Int -> [a] -> [a]
 subList a b xs = take b (drop a xs)
 
+-- Given an expression and it's location returns all it's subexpressions
+argsHelper :: Expr -> Location -> [SubExpr]
+argsHelper e loc = todo "argsHelper"
+
 -- args :: [Expr] -> [SubExpr], used for both Con and Compose
 args :: [Expr] -> [SubExpr]
 args es = [SubExpr (head (subList a b es)) (Arg a All) | (a, b) <- filteredSegments]
@@ -90,9 +94,9 @@ segments es = SubExpr (compose es) All:[SubExpr (Compose (subList a b es)) (Seg 
     allIntervals = uniqIntervals (intervals (concat [parts i es | i <- [1..(length es)]])) []
 
 subExprs :: Expr -> [SubExpr]
-subExprs (Var x) = todo "var" -- Var x
-subExprs (Con n (x:xs)) = todo "subCon"
-subExprs (Compose (x:xs)) = todo "subCom"
+subExprs (Var x) = [SubExpr (Var x) All]
+subExprs (Con n es) = args es
+subExprs (Compose es@(x:xs)) = segments es ++ args es
 
 
 -- | Replacing a subexpression of expression ~e~ at a location ~loc~ with a replacement expression ~r~.
