@@ -131,10 +131,13 @@ rewrite :: ([Law], [Law]) -> Expr -> [(LawName, Expr)]
 rewrite (llaws, rlaws) x = concat $ [applyLaw law sx x | law <- llaws, sx <- subExprs x] ++ [applyLaw law sx x | law <- rlaws, sx <- subExprs x]
   where
     applyLaw :: Law -> SubExpr -> Expr -> [(LawName, Expr)]
-    applyLaw (Law name lhs rhs) (SubExpr sub loc) exp = [(name, replace exp loc a) | a <- applied]
+    applyLaw (Law name lhs rhs) (SubExpr sub loc) exp = [(name, replace exp loc a) | a <- results]
       where
-        substitutions = match lhs sub
-        applied       = [applySubst s sub | s <- substitutions]
+        lhses = match sub lhs
+        substituted       = [applySubst s sub | s <- lhses, applySubst s sub /= sub]
+        substitutions = concat [match e rhs | e <- substituted]
+        results = [applySubst s e | s <- substitutions, e <- substituted]
+
 
 -- | Simply choose the first rewriting, and repeat the process until can't rewrite anymore
 --
