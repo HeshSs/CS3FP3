@@ -194,6 +194,21 @@ subExprs_test2 = subExprs (Compose [a, d]) == [SubExpr (Compose [a, d]) All,
                                                SubExpr x (Arg 1 (Arg 2 All))]
 
 -------------------------------------------------------------------------------
+
+-- | `replace`
+
+e3 = parseExpr "f . g . h . zip (m . n, mul)"
+
+replace_test0 = replace (Compose [a, d]) (Arg 1 (Arg 2 All)) y == Compose [a, Con "thing" [x, x, y]]
+
+replace_test1 = replace (Compose [a, b, c, d]) (Seg 2 2) c == Compose [a, b, c]
+
+replace_test2 = replace (Compose [a, b, c, d, e]) (Seg 0 3) b == Compose [b, d, e]
+
+replace_test3 = replace (Compose [a, b, c, d, e]) (Arg 0 All) c == replace (Compose [a, b, c, d, e]) (Arg 2 All) a
+
+-------------------------------------------------------------------------------
+
 laws, filters, ifs, pairs, others :: [Law]
 laws = filters ++ ifs ++ pairs ++ others
 filters =

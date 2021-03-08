@@ -73,6 +73,7 @@ uniqIntervals [] xs     = xs
 subList :: Int -> Int -> [a] -> [a]
 subList a b xs = take b (drop a xs)
 
+-- Given a list of integers as the location of a argument returns it's location
 locator :: [Int] -> Location
 locator []     = All
 locator (i:is) = Arg i (locator is)
@@ -110,11 +111,18 @@ subExprs (Compose es@(x:xs)) = segments es ++ args es
 -- (e has subexpression m . n located at Arg 3 (Arg 0 All))
 -- > replace e (Arg 3 (Arg 0 All)) (parseExpr "mul . add")
 -- f . g . h . zip(mul . add, mul)
+
+replaceNth :: Int -> a -> [a] -> [a]
+replaceNth n x xs = take n xs ++ [x] ++ drop (n+1) xs
+
+replaceInterval :: (Int, Int) -> a -> [a] -> [a]
+replaceInterval (a, b) x xs = take a xs ++ [x] ++ drop (a+b) xs
+
 replace :: Expr -> Location -> Expr -> Expr
 replace e All replacement = replacement
-replace (Con f xs) (Arg j loc) y = todo "replace1"
-replace (Compose xs) (Arg j loc) y = todo "replace2"
-replace (Compose xs) (Seg j k) y = todo "replace3"
+replace (Con f xs) (Arg j loc) y = Con f (replaceNth j (replace (xs !! j) loc y) xs)
+replace (Compose xs) (Arg j loc) y = Compose (replaceNth j (replace (xs !! j) loc y) xs)
+replace (Compose xs) (Seg j k) y = Compose (replaceInterval (j, k) y xs)
 
 -- | Given a pair of laws and an expression `e`, returns all possible pair way of rewriting `e`
 -- The result is the list of (LawName, Expr), where LawName is the name of the applicable law, and
