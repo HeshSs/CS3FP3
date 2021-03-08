@@ -175,10 +175,23 @@ segments_test2 = segments [a, b, c, d] == [SubExpr (Compose [a, b, c, d]) All,
                                            SubExpr (Compose [a, b, c]) (Seg 0 3),
                                            SubExpr (Compose [c, d]) (Seg 2 2)]
 
-
 -------------------------------------------------------------------------------
 
--- | `parts`
+-- | `subExprs`
+
+e2 = parseExpr "f . g . zip (m . n, p . q)"
+subExprs_test0 = length (subExprs e2) == 12
+
+subExprs_test1 = length (subExprs (Compose [a, b, c, d, e])) == 24
+
+subExprs_test2 = subExprs (Compose [a, d]) == [SubExpr (Compose [a, d]) All,
+                                               SubExpr a (Arg 0 All),
+                                               SubExpr x (Arg 0 (Arg 0 All)),
+                                               SubExpr y (Arg 0 (Arg 1 All)),
+                                               SubExpr d (Arg 1 All),
+                                               SubExpr x (Arg 1 (Arg 0 All)),
+                                               SubExpr x (Arg 1 (Arg 1 All)),
+                                               SubExpr x (Arg 1 (Arg 2 All))]
 
 -------------------------------------------------------------------------------
 laws, filters, ifs, pairs, others :: [Law]

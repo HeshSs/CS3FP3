@@ -30,7 +30,7 @@ data SubExpr
       Expr -- The subexpression
       Location -- Location of the subexpression w.r.t its parent
     deriving (Eq)
-    
+
 instance Show SubExpr where
   show (SubExpr e loc) = "subexpression " ++ show e ++ " located at " ++ show loc
 
@@ -50,7 +50,7 @@ instance Show SubExpr where
 -- subexpression p . q                     located at Arg 2 (Arg 1 All)
 -- subexpression p                         located at Arg 2 (Arg 1 (Arg 0 All))
 -- subexpression q                         located at Arg 2 (Arg 1 (Arg 1 All))
--- Hint: you might want to have two auxiliary function:
+
 -- Finds all the intervals given a list of partitions
 intervals :: (Eq b, Num b, Enum b) => [[[a]]] -> [(b, Int)]
 intervals []     = []
@@ -73,13 +73,19 @@ uniqIntervals [] xs     = xs
 subList :: Int -> Int -> [a] -> [a]
 subList a b xs = take b (drop a xs)
 
--- Given an expression and it's location returns all it's subexpressions
-argsHelper :: Expr -> Location -> [SubExpr]
-argsHelper e loc = todo "argsHelper"
+locator :: [Int] -> Location
+locator []     = All
+locator (i:is) = Arg i (locator is)
+
+-- Given an expression and it's index returns all it's subexpressions
+argsHelper :: Expr -> [Int] -> [SubExpr]
+argsHelper (Var x) is = [SubExpr (Var x) (locator is)]
+argsHelper e@(Con _ es) is = SubExpr e (locator is) : concat [ argsHelper a (is ++ [j]) | (a, j) <- zip es [0..(length es)]]
+argsHelper e@(Compose es) is = SubExpr e (locator is) : concat [ argsHelper a (is ++ [j]) | (a, j) <- zip es [0..(length es)]]
 
 -- args :: [Expr] -> [SubExpr], used for both Con and Compose
 args :: [Expr] -> [SubExpr]
-args es = [SubExpr (head (subList a b es)) (Arg a All) | (a, b) <- filteredSegments]
+args es = concat [argsHelper (head (subList a b es)) [a] | (a, b) <- filteredSegments]
   where
     filteredSegments = filter (\(_, b) -> b == 1) allIntervals
     allIntervals = uniqIntervals (intervals (concat [parts i es | i <- [1..(length es)]])) []
@@ -93,9 +99,8 @@ segments es = SubExpr (compose es) All:[SubExpr (Compose (subList a b es)) (Seg 
 
 subExprs :: Expr -> [SubExpr]
 subExprs (Var x) = [SubExpr (Var x) All]
-subExprs (Con n es) = args es
+subExprs (Con _ es) = args es
 subExprs (Compose es@(x:xs)) = segments es ++ args es
-
 
 -- | Replacing a subexpression of expression ~e~ at a location ~loc~ with a replacement expression ~r~.
 -- Note that we assume the location is valid w.r.t the expression, i.e
