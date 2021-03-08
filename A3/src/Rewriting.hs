@@ -100,7 +100,7 @@ segments es = SubExpr (compose es) All:[SubExpr (Compose (subList a b es)) (Seg 
 
 subExprs :: Expr -> [SubExpr]
 subExprs (Var x) = [SubExpr (Var x) All]
-subExprs (Con _ es) = args es
+subExprs e@(Con _ es) = SubExpr e All : args es
 subExprs (Compose es@(x:xs)) = segments es ++ args es
 
 -- | Replacing a subexpression of expression ~e~ at a location ~loc~ with a replacement expression ~r~.
@@ -131,13 +131,10 @@ rewrite :: ([Law], [Law]) -> Expr -> [(LawName, Expr)]
 rewrite (llaws, rlaws) x = concat $ [applyLaw law sx x | law <- llaws, sx <- subExprs x] ++ [applyLaw law sx x | law <- rlaws, sx <- subExprs x]
   where
     applyLaw :: Law -> SubExpr -> Expr -> [(LawName, Expr)]
-    applyLaw (Law name lhs rhs) (SubExpr sub loc) exp = [(name, replace exp loc a) | a <- results]
+    applyLaw (Law name lhs rhs) (SubExpr sub loc) exp = [(name, replace exp loc a) | a <- substituted]
       where
-        lhses = match sub lhs
-        substituted       = [applySubst s sub | s <- lhses, applySubst s sub /= sub]
-        substitutions = concat [match e rhs | e <- substituted]
-        results = [applySubst s e | s <- substitutions, e <- substituted]
-
+        lhses         = match lhs sub
+        substituted   = [applySubst s rhs | s <- lhses]
 
 -- | Simply choose the first rewriting, and repeat the process until can't rewrite anymore
 --
