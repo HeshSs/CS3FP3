@@ -36,7 +36,9 @@ ex5 = andB []
 
 -- Zeroeth Question: why is it justified for andB, orB and xorB to take lists
 -- as input?  What does |xorB []| mean?
--- TODO
+-- Answer:
+-- The and, or and xor operators can take a list as input because they're associative, commutative and they have identity elements.
+-- The |xorB []| is going to be FalseB because the identity of xor operator is False. 
 
 ----------------------------------------------------------------------------
 -- First interpretation: as a String.
@@ -82,9 +84,30 @@ data BE = Var String | Not BE | And BE BE | Or BE BE | TrueB | FalseB
 asBE :: BE -> BE
 asBE = id
 
+converter :: String -> [BE] -> BE
+converter "or" []          = FalseB
+converter "or" [y1]        = asBE y1
+converter "or" [y1,y2]     = Or (asBE y1) (asBE y2)
+converter "or" (y:ys)      = Or (asBE y) (asBE (orB ys))
+converter "and" []         = TrueB
+converter "and" [y1]       = asBE y1
+converter "and" [y1,y2]    = And (asBE y1) (asBE y2)
+converter "and" (y:ys)     = And (asBE y) (asBE (andB ys))
+converter "xor" []         = FalseB
+converter "xor" [y1]       = asBE y1
+-- p XOR q = (p AND (NOT q)) OR ((NOT p) AND q) 
+converter "xor" [y1,y2]    = Or (And (asBE y1) (Not (asBE y2))) (And (Not (asBE y1)) (asBE y2))
+converter "xor" (y:ys)    = Or (And (asBE y) (Not (asBE (xorB ys)))) (And (Not (asBE y)) (asBE (xorB ys)))
+
 -- Hint: this instance has more cases than the above
 -- Hint: foldr1
 instance BoolExpr BE where
+  varB s       = Var s
+  notB p       = Not (asBE p)
+  andB xs      = converter "and" xs
+  orB xs       = converter "or" xs
+  impliesB a b = Or (Not a) b
+  xorB xs      = converter "xor" xs
 
 -- Test cases:
 -- asBE ex1
