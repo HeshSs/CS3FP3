@@ -1,5 +1,6 @@
 {-# OPTIONS_GHC -Wall #-}
 {-# LANGUAGE NoMonomorphismRestriction #-}
+{-# OPTIONS_GHC -Wno-incomplete-patterns #-}
 module A4 where
 
 -- The following are useful for the assignment
@@ -120,7 +121,14 @@ instance BoolExpr BE where
 ----------------------------------------------------------------------------
 -- Fourth question: the other direction!
 toBoolExpr :: BoolExpr repr => BE -> repr
-toBoolExpr _ = undefined
+toBoolExpr (Var s)    = varB s
+toBoolExpr (Not x)    = notB (toBoolExpr x)
+toBoolExpr TrueB      = andB []
+toBoolExpr FalseB     = orB []
+toBoolExpr (Or (And a b) (And c d)) = undefined -- TODO
+toBoolExpr (And a b)  = undefined -- TODO
+toBoolExpr (Or a b)  = undefined -- TODO
+
 
 ex1b, ex2b, ex3b, ex4b, ex5b :: BE
 ex1b = And TrueB (And (Not (Var "x")) (Or (Var "y") (Var "z")))
