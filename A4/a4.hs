@@ -155,6 +155,12 @@ ex5b = TrueB
 newtype Size = Sz {size :: Int}
 
 instance BoolExpr Size where
+  varB _        = Sz 1
+  notB p        = Sz (1 + size p)
+  andB xs       = Sz (foldr ((+) . size) 1 xs)
+  orB xs        = Sz (foldr ((+) . size) 1 xs)
+  impliesB a b  = Sz (size a + size b)
+  xorB xs       = Sz (foldr ((+) . size) 1 xs)
 
 ----------------------------------------------------------------------------
 -- Sixth question: compute the 'depth' of an expression (as a tree)
@@ -167,6 +173,12 @@ instance BoolExpr Size where
 newtype Depth = De {depth :: Int}
 
 instance BoolExpr Depth where
+  varB _        = De 0
+  notB p        = De $ depth p
+  andB xs       = De (foldr (max . (+1) . depth) 0 xs)
+  orB xs        = De (foldr (max . (+1) . depth) 0 xs)
+  impliesB a b  = De (max (depth a) (depth b))
+  xorB xs       = De (foldr (max . (+1) . depth) 0 xs)
 
 -- Lastly, give an explicit example where going to BE and then back
 -- to repr changes the depth of the results.
