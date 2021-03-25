@@ -119,13 +119,6 @@ instance BoolExpr BE where
 -- Var "w"
 
 ----------------------------------------------------------------------------
-
-reconverter :: BoolExpr repr => [Char] -> BE -> [repr]
-reconverter "xor" (Or m@(And j (Not k)) n@(And (Not l) o)) = if j == l && k == o then toBoolExpr j : reconverter "xor" k else [orB (toBoolExpr m : reconverter "or" n)]
-reconverter "and" (And a b) = toBoolExpr a : reconverter "and" b
-reconverter "or" (Or a b) = toBoolExpr a : reconverter "or" b
-reconverter _ x = [toBoolExpr x]
-
 -- Fourth question: the other direction!
 toBoolExpr :: BoolExpr repr => BE -> repr
 toBoolExpr (Var s)    = varB s
@@ -135,6 +128,12 @@ toBoolExpr FalseB     = orB []
 toBoolExpr (Or x@(And a (Not b)) y@(And (Not c) d)) = if a == c && b == d then xorB (toBoolExpr a : reconverter "xor" b) else orB (toBoolExpr x : reconverter "or" y)
 toBoolExpr (And a b)  = andB (toBoolExpr a : reconverter "and" b)
 toBoolExpr (Or a b)  = orB (toBoolExpr a : reconverter "or" b) 
+
+reconverter :: BoolExpr repr => [Char] -> BE -> [repr]
+reconverter "xor" (Or m@(And j (Not k)) n@(And (Not l) o)) = if j == l && k == o then toBoolExpr j : reconverter "xor" k else [orB (toBoolExpr m : reconverter "or" n)]
+reconverter "and" (And a b) = toBoolExpr a : reconverter "and" b
+reconverter "or" (Or a b) = toBoolExpr a : reconverter "or" b
+reconverter _ x = [toBoolExpr x]
 
 ex1b, ex2b, ex3b, ex4b, ex5b :: BE
 ex1b = And TrueB (And (Not (Var "x")) (Or (Var "y") (Var "z")))
@@ -150,7 +149,8 @@ ex5b = TrueB
 --  that clearly demonstrates it]
 -- Hint: depth will, in general, change.
 
-
+-- Answer:
+-- When we translate from (BoolExpr repr) to BE we do some simplification which as a result reduces the depth if we translate it back to (BoolExpr repr).
 
 ----------------------------------------------------------------------------
 -- Fifth question: compute the 'size' of an expression.
@@ -206,7 +206,7 @@ newtype NotFound = VarNotFound String
 newtype Eval = Ev { val :: ExceptT NotFound (Reader Valuation) Bool}
 
 -- Hint: ask, liftEither, sequence, Data.Foldable.and, and monads
-instance BoolExpr Eval where
+-- instance BoolExpr Eval where
 
 -- For the rest of the bonus questions, the 'tutorial' at
 -- http://okmij.org/ftp/tagless-final/index.html#course-oxford
@@ -260,3 +260,10 @@ main = do
   -- [And TrueB (And (Not (Var "x")) (Or (Var "y") (Var "z"))),And TrueB (And (Not (Var "x")) (Or (Var "y") (Or (Var "z") (Var "x")))),Var "w",Var "s",TrueB]
   putStrLn $ show $ map view $ map toBoolExpr exbs
   -- ["(andB [(andB []),(andB [(notB var \"x\"),(orB [var \"y\",var \"z\"])])])","(andB [(andB []),(andB [(notB var \"x\"),(orB [var \"y\",(orB [var \"z\",var \"x\"])])])])","var \"w\"","var \"s\"","(andB [])"]
+
+  -- Part 4
+  -- Original (BoolExpr repr)
+  print $ map depth exs
+
+  -- (BoolExpr repr) -> BE
+  print $ map (depth . toBoolExpr . asBE) exs
