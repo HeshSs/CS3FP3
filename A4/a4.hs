@@ -81,7 +81,7 @@ instance BoolExpr FV where
 ----------------------------------------------------------------------------
 -- Third interpretation: as 'syntax'
 data BE = Var String | Not BE | And BE BE | Or BE BE | TrueB | FalseB
-  deriving Show
+  deriving (Show, Eq)
 asBE :: BE -> BE
 asBE = id
 
@@ -119,15 +119,23 @@ instance BoolExpr BE where
 -- Var "w"
 
 ----------------------------------------------------------------------------
+
+reconverter :: BoolExpr repr => [Char] -> BE -> [repr]
+reconverter "xor" (Or m@(And j (Not k)) n@(And (Not l) o)) = if j == l && k == o then toBoolExpr j : reconverter "xor" k else [orB (toBoolExpr m : reconverter "or" n)]
+reconverter "and" (And a b) = toBoolExpr a : reconverter "and" b
+reconverter "or" (Or a b) = toBoolExpr a : reconverter "or" b
+reconverter _ x = [toBoolExpr x]
+
 -- Fourth question: the other direction!
 toBoolExpr :: BoolExpr repr => BE -> repr
 toBoolExpr (Var s)    = varB s
 toBoolExpr (Not x)    = notB (toBoolExpr x)
 toBoolExpr TrueB      = andB []
 toBoolExpr FalseB     = orB []
-toBoolExpr (Or (And a b) (And c d)) = undefined -- TODO
-toBoolExpr (And a b)  = undefined -- TODO
-toBoolExpr (Or a b)  = undefined -- TODO
+toBoolExpr (Or x@(And a (Not b)) y@(And (Not c) d)) = if a == c && b == d then xorB (toBoolExpr a : reconverter "xor" b) else orB (toBoolExpr x : reconverter "or" y)
+toBoolExpr (And a b)  = andB (toBoolExpr a : reconverter "and" b)
+toBoolExpr (Or a b)  = orB (toBoolExpr a : reconverter "or" b) 
+  
 
 
 ex1b, ex2b, ex3b, ex4b, ex5b :: BE
