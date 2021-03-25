@@ -135,8 +135,6 @@ toBoolExpr FalseB     = orB []
 toBoolExpr (Or x@(And a (Not b)) y@(And (Not c) d)) = if a == c && b == d then xorB (toBoolExpr a : reconverter "xor" b) else orB (toBoolExpr x : reconverter "or" y)
 toBoolExpr (And a b)  = andB (toBoolExpr a : reconverter "and" b)
 toBoolExpr (Or a b)  = orB (toBoolExpr a : reconverter "or" b) 
-  
-
 
 ex1b, ex2b, ex3b, ex4b, ex5b :: BE
 ex1b = And TrueB (And (Not (Var "x")) (Or (Var "y") (Var "z")))
@@ -151,6 +149,8 @@ ex5b = TrueB
 -- [i.e. add some code here, and then something in 'main' below
 --  that clearly demonstrates it]
 -- Hint: depth will, in general, change.
+
+
 
 ----------------------------------------------------------------------------
 -- Fifth question: compute the 'size' of an expression.
