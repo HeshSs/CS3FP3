@@ -68,13 +68,29 @@ class StackMachine stk where
 -- an Int, and returns a Bool for if the input is 0 mod 3, and
 -- the string " Fizz" if True, "" otherwise
 fizz :: (StackMachine stk) => stk (Int, s) -> stk (Bool, (String, s))
-fizz s = seql (push 0 (smod (push 3 s)))
+fizz s = push 3 s     -- (3, (i, e))
+      >> smod         -- (i mod 3, e)
+      >> push 0       -- (0, (i mod 3, e))
+      >> seql         -- (i mod 3 == 0, e)
+      >> push " Fizz" -- (" Fizz", (i mod 3 == 0, e))
+      >> swap         -- (i mod 3 == 0, (" Fizz", e))
+      >> push ""      -- ("", (i mod 3 == 0, (" Fizz", e)))
+      >> rot          -- (i mod 3 == 0, (" Fizz", ("", e)))
+      >> ifThenElse   -- (if True then " Fizz" else "", e)
 
 -- Write a program with the following signature that takes as input
 -- an Int, and returns a Bool for if the input is 0 mod 5, and
 -- the string " Buzz" if True, "" otherwise
 buzz :: (StackMachine stk) => stk (Int, s) -> stk (Bool, (String, s))
-buzz s = seql (push 0 (smod (push 5 s)))
+buzz s = push 5 s     -- (5, (i, e))
+      >> smod         -- (i mod 5, e)
+      >> push 0       -- (0, (i mod 5, e))
+      >> seql         -- (i mod 5 == 0, e)
+      >> push " Buzz" -- (" Fizz", (i mod 5 == 0, e))
+      >> swap         -- (i mod 5 == 0, (" Fizz", e))
+      >> push ""      -- ("", (i mod 5 == 0, (" Fizz", e)))
+      >> rot          -- (i mod 5 == 0, (" Fizz", ("", e)))
+      >> ifThenElse   -- (if True then " Fizz" else "", e)
 
 -- Write a program with the following signature that takes as input
 -- an Int, and returns the following:
@@ -84,7 +100,8 @@ buzz s = seql (push 0 (smod (push 5 s)))
 -- this involves a lot of stack manipulation!  My version of this code
 -- is 14 instructions long (but I don't guarantee that's optimal)
 fizzbuzz :: (StackMachine stk) => stk (Int, s) -> stk (Bool, (String, s))
-fizzbuzz = _
+fizzbuzz s = result
+
 
 {------------------------------------------------------------------------------
 -- Q1.b
