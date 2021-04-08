@@ -100,7 +100,18 @@ buzz s = push 5 s     -- (5, (i, e))
 -- this involves a lot of stack manipulation!  My version of this code
 -- is 14 instructions long (but I don't guarantee that's optimal)
 fizzbuzz :: (StackMachine stk) => stk (Int, s) -> stk (Bool, (String, s))
-fizzbuzz s = result
+fizzbuzz s = dup      -- (i, (i, e))
+          >> fizz     -- (b1, (s1, (i, e)))
+          >> rot23    -- (b1, (i, (s1, e)))
+          >> swap     -- (i, (b1, (s1, e)))
+          >> buzz     -- (b2, (s2, (b1, (s1, e))))
+          >> rot23    -- (b2, (b1, (s2, (s1, e))))
+          >> sor      -- (b2 or b1, (s2, (s1, e)))
+          >> snot     -- (not (b2 or b1), (s2, (s1, e)))
+          >> rot      -- (s2, (s1, (not (b2 or b1), e)))
+          >> swap     -- (s1, (s2, (not (b2 or b1), e)))
+          >> sappend  -- (s1 ++ s2, (not (b2 or b1), e))
+          >> swap     -- (not (b2 or b1), (s1 ++ s2, e))
 
 
 {------------------------------------------------------------------------------
