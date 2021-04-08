@@ -86,11 +86,11 @@ buzz s = push 5 s     -- (5, (i, e))
       >> smod         -- (i mod 5, e)
       >> push 0       -- (0, (i mod 5, e))
       >> seql         -- (i mod 5 == 0, e)
-      >> push " Buzz" -- (" Fizz", (i mod 5 == 0, e))
-      >> swap         -- (i mod 5 == 0, (" Fizz", e))
-      >> push ""      -- ("", (i mod 5 == 0, (" Fizz", e)))
-      >> rot          -- (i mod 5 == 0, (" Fizz", ("", e)))
-      >> ifThenElse   -- (if True then " Fizz" else "", e)
+      >> push " Buzz" -- (" Buzz", (i mod 5 == 0, e))
+      >> swap         -- (i mod 5 == 0, (" Buzz", e))
+      >> push ""      -- ("", (i mod 5 == 0, (" Buzz", e)))
+      >> rot          -- (i mod 5 == 0, (" Buzz", ("", e)))
+      >> ifThenElse   -- (if True then " Buzz" else "", e)
 
 -- Write a program with the following signature that takes as input
 -- an Int, and returns the following:
@@ -112,7 +112,6 @@ fizzbuzz s = dup      -- (i, (i, e))
           >> swap     -- (s1, (s2, (not (b2 or b1), e)))
           >> sappend  -- (s1 ++ s2, (not (b2 or b1), e))
           >> swap     -- (not (b2 or b1), (s1 ++ s2, e))
-
 
 {------------------------------------------------------------------------------
 -- Q1.b
