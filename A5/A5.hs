@@ -68,13 +68,13 @@ class StackMachine stk where
 -- an Int, and returns a Bool for if the input is 0 mod 3, and
 -- the string " Fizz" if True, "" otherwise
 fizz :: (StackMachine stk) => stk (Int, s) -> stk (Bool, (String, s))
-fizz = _
+fizz s = seql (push 0 (smod (push 3 s)))
 
 -- Write a program with the following signature that takes as input
 -- an Int, and returns a Bool for if the input is 0 mod 5, and
 -- the string " Buzz" if True, "" otherwise
 buzz :: (StackMachine stk) => stk (Int, s) -> stk (Bool, (String, s))
-buzz = _
+buzz s = seql (push 0 (smod (push 5 s)))
 
 -- Write a program with the following signature that takes as input
 -- an Int, and returns the following:
