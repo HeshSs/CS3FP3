@@ -100,7 +100,7 @@ buzz s = push 5 s     -- (5, (i, e))
 -- this involves a lot of stack manipulation!  My version of this code
 -- is 14 instructions long (but I don't guarantee that's optimal)
 fizzbuzz :: (StackMachine stk) => stk (Int, s) -> stk (Bool, (String, s))
-fizzbuzz s = dup      -- (i, (i, e))
+fizzbuzz s = dup s     -- (i, (i, e))
           >> fizz     -- (b1, (s1, (i, e)))
           >> rot23    -- (b1, (i, (s1, e)))
           >> swap     -- (i, (b1, (s1, e)))
@@ -132,6 +132,35 @@ liftR2 :: (a -> b -> c) -> R (a, (b, s)) -> R (c, s)
 liftR2 f (R (a, (b, s))) = R (f a b, s)
 
 instance StackMachine R where
+    empty                         = R ()
+
+    push x (R s)                  = R (x s)
+    drop (R (x, s))               = R s
+
+    swap (R (x1, (x2, s)))        = R (x2, (x1, s))
+    dup (R (x, s))                = R (x, (x, s))
+    rot (R (x1, (x2, (x3, s))))   = R (x2, (x3, (x1, s)))
+    rot23 (R (x1, (x2, (x3, s)))) = R (x1, (x3, (x2, s)))
+
+    sadd (R (x1, (x2, s)))        = R (x1 + x2, s)
+    smul (R (x1, (x2, s)))        = R (x1 * x2, s)
+    sleq (R (x1, (x2, s)))        = R (x1 <= x2, s)
+    seql (R (x1, (x2, s)))        = R (x1 == x2, s)
+    smod (R (x1, (x2, s)))        = R (x2 % x1, s)
+    sand (R (x1, (x2, s)))        = R (x1 && x2, s)
+    sor (R (x1, (x2, s)))         = R (x1 || x2, s)
+    snot (R (x1, s))              = R (not x1, s)
+
+    sappend (R (x1, (x2, s)))     = R (x1 ++ x2, s)
+
+    spair (R (x1, (x2, s)))       = R ((x1, x2), s)
+    unpair (R ((x1, x2), s))      = R (x1, (x2, s))
+    sfst (R ((x1, x2), s))        = R (x1, s)
+    ssnd (R ((x1, x2), s))        = R (x2, s)
+
+    skip s                        = s
+
+    ifThenElse (R (b, (x1, (x2, s)))) = R (if b then x1 else x2, s)
 
 {------------------------------------------------------------------------------
 -- Q1.c, for the R instance above
