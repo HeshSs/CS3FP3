@@ -168,12 +168,12 @@ instance StackMachine R where
 
 -- Write a function that returns to the top of the stack as the result
 stkEvalResult :: R (a,s) -> a
-stkEvalResult = _
+stkEvalResult R (x1, _) = x1
 
 -- Write a function that returns to the String which is the 2nd-most top
 -- of the stack as result
 stkPrintEvalOutput :: R (a, (String, s)) -> String
-stkPrintEvalOutput = _
+stkPrintEvalOutput (R (x1, (s1, _))) = s1
 
 {------------------------------------------------------------------------------
 -- Q2
