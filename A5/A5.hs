@@ -1,5 +1,6 @@
 {-# OPTIONS_GHC -Wall #-}
 {-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE RankNTypes #-}
 
 module A5ans where
 
@@ -245,33 +246,50 @@ instance StackMachine C where
   Use RR below.  See the tutorial 10 material to get started.
 -}
 
-class Symantics repr where
+class IntSy repr where
   int :: Int -> repr Int
-  bool :: Bool -> repr Bool
-
   add :: repr Int -> repr Int -> repr Int
   mul :: repr Int -> repr Int -> repr Int
   sub :: repr Int -> repr Int -> repr Int
+  mod_ :: repr Int -> repr Int -> repr Int
+
+class BoolSy repr where
+  bool :: Bool -> repr Bool
+  if_ :: repr Bool -> repr a -> repr a -> repr a
+
+  and_ :: repr Bool -> repr Bool -> repr Bool
+  or_ :: repr Bool -> repr Bool -> repr Bool
+  not_ :: repr Bool -> repr Bool
+
+class OrderSy repr where
   leq :: repr Int -> repr Int -> repr Int
-  mod :: repr Int -> repr Int -> repr Int
 
-  eql :: (Eq a) => repr a -> repr a -> repr a
-  and :: repr Bool -> repr Bool -> repr Bool
-  or :: repr Bool -> repr Bool -> repr Bool
-  not :: repr Bool -> repr Bool
+class PairSy repr where
+  pair :: repr a -> repr b -> repr (a, b)
+  fst_ :: repr (a, b) -> repr a
+  snd_ :: repr (a, b) -> repr b
 
+class EqSy repr where
+  eql :: (Eq a) => repr a -> repr a -> repr Bool
+
+class StringSy repr where
   append :: repr String -> repr String -> repr String 
 
-  pair :: repr a -> repr b -> repr (a, b)
-  fst :: repr (a, b) -> repr a
-  snd :: repr (a, b) -> repr b
+------------------
 
--- newtype RR c a = RR { unRR :: forall s. c s -> c (a,s) }
+newtype RR c a = RR { unRR :: forall s. c s -> c (a,s) }
 
--- instance StackMachine c => IntSy (RR c) where
--- instance StackMachine c => BoolSy (RR c) where
--- instance StackMachine c => OrderSy (RR c) where
--- instance StackMachine c => PairSy (RR c) where
+instance StackMachine c => IntSy (RR c) where
+
+instance StackMachine c => BoolSy (RR c) where
+
+instance StackMachine c => OrderSy (RR c) where
+
+instance StackMachine c => PairSy (RR c) where
+
+instance StackMachine c => EqSy (RR c) where 
+
+instance StackMachine c => StringSy (RR c) where
 
 {- 4
   Write test cases for all of this:
