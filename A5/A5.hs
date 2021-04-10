@@ -68,29 +68,41 @@ class StackMachine stk where
 -- an Int, and returns a Bool for if the input is 0 mod 3, and
 -- the string " Fizz" if True, "" otherwise
 fizz :: (StackMachine stk) => stk (Int, s) -> stk (Bool, (String, s))
-fizz s = push 3 s     -- (3, (i, e))
-      >> smod         -- (i mod 3, e)
-      >> push 0       -- (0, (i mod 3, e))
-      >> seql         -- (i mod 3 == 0, e)
-      >> push " Fizz" -- (" Fizz", (i mod 3 == 0, e))
-      >> swap         -- (i mod 3 == 0, (" Fizz", e))
-      >> push ""      -- ("", (i mod 3 == 0, (" Fizz", e)))
-      >> rot          -- (i mod 3 == 0, (" Fizz", ("", e)))
-      >> ifThenElse   -- (if True then " Fizz" else "", e)
+fizz = push int3              -- (3, (i, e))
+      >> swap                 -- (i, (3, e))
+      >> smod                 -- (i mod 3, e)
+      >> push int0            -- (0, (i mod 3, e))
+      >> seql                 -- (i mod 3 == 0, e)
+      >> dup                  -- (i mod 3 == 0, (i mod 3 == 0, e))
+      >> push (" Fizz" :: String) -- (" Fizz", (i mod 3 == 0, (i mod 3 == 0, e)))
+      >> swap                 -- (i mod 3 == 0, (" Fizz", (i mod 3 == 0, e)))
+      >> push ("" :: String)  -- ("", (i mod 3 == 0, (" Fizz", (i mod 3 == 0, e))))
+      >> rot                  -- (i mod 3 == 0, (" Fizz", ("", (i mod 3 == 0, e))))
+      >> ifThenElse           -- (if True then " Fizz" else "", (i mod 3 == 0, e))
+      >> swap                 -- (i mod 3 == 0, (if True then " Fizz" else "", e))
+  where
+    int3 = 3 :: Int
+    int0 = 0 :: Int
 
 -- Write a program with the following signature that takes as input
 -- an Int, and returns a Bool for if the input is 0 mod 5, and
 -- the string " Buzz" if True, "" otherwise
 buzz :: (StackMachine stk) => stk (Int, s) -> stk (Bool, (String, s))
-buzz s = push 5 s     -- (5, (i, e))
-      >> smod         -- (i mod 5, e)
-      >> push 0       -- (0, (i mod 5, e))
-      >> seql         -- (i mod 5 == 0, e)
-      >> push " Buzz" -- (" Buzz", (i mod 5 == 0, e))
-      >> swap         -- (i mod 5 == 0, (" Buzz", e))
-      >> push ""      -- ("", (i mod 5 == 0, (" Buzz", e)))
-      >> rot          -- (i mod 5 == 0, (" Buzz", ("", e)))
-      >> ifThenElse   -- (if True then " Buzz" else "", e)
+buzz = push int5              -- (5, (i, e))
+      >> swap                 -- (i, (5, e))
+      >> smod                 -- (i mod 5, e)
+      >> push int0            -- (0, (i mod 5, e))
+      >> seql                 -- (i mod 5 == 0, e)
+      >> dup                  -- (i mod 5 == 0, (i mod 5 == 0, e))
+      >> push (" Buzz" :: String) -- (" Buzz", (i mod 5 == 0, (i mod 5 == 0, e)))
+      >> swap                 -- (i mod 5 == 0, (" Buzz", (i mod 5 == 0, e)))
+      >> push ("" :: String)  -- ("", (i mod 5 == 0, (" Buzz", (i mod 5 == 0, e))))
+      >> rot                  -- (i mod 5 == 0, (" Buzz", ("", (i mod 5 == 0, e))))
+      >> ifThenElse           -- (if True then " Buzz" else "", (i mod 5 == 0, e))
+      >> swap                 -- (i mod 5 == 0, (if True then " Buzz" else "", e))
+  where
+    int5 = 5 :: Int
+    int0 = 0 :: Int
 
 -- Write a program with the following signature that takes as input
 -- an Int, and returns the following:
@@ -100,7 +112,7 @@ buzz s = push 5 s     -- (5, (i, e))
 -- this involves a lot of stack manipulation!  My version of this code
 -- is 14 instructions long (but I don't guarantee that's optimal)
 fizzbuzz :: (StackMachine stk) => stk (Int, s) -> stk (Bool, (String, s))
-fizzbuzz s = dup s     -- (i, (i, e))
+fizzbuzz = dup      -- (i, (i, e))
           >> fizz     -- (b1, (s1, (i, e)))
           >> rot23    -- (b1, (i, (s1, e)))
           >> swap     -- (i, (b1, (s1, e)))
@@ -134,8 +146,8 @@ liftR2 f (R (a, (b, s))) = R (f a b, s)
 instance StackMachine R where
     empty                         = R ()
 
-    push x (R s)                  = R (x s)
-    drop (R (x, s))               = R s
+    push x (R s)                  = R (x, s)
+    drop (R (_, s))               = R s
 
     swap (R (x1, (x2, s)))        = R (x2, (x1, s))
     dup (R (x, s))                = R (x, (x, s))
@@ -146,7 +158,7 @@ instance StackMachine R where
     smul (R (x1, (x2, s)))        = R (x1 * x2, s)
     sleq (R (x1, (x2, s)))        = R (x1 <= x2, s)
     seql (R (x1, (x2, s)))        = R (x1 == x2, s)
-    smod (R (x1, (x2, s)))        = R (x2 % x1, s)
+    smod (R (x1, (x2, s)))        = R (mod x2 x1, s)
     sand (R (x1, (x2, s)))        = R (x1 && x2, s)
     sor (R (x1, (x2, s)))         = R (x1 || x2, s)
     snot (R (x1, s))              = R (not x1, s)
@@ -155,8 +167,8 @@ instance StackMachine R where
 
     spair (R (x1, (x2, s)))       = R ((x1, x2), s)
     unpair (R ((x1, x2), s))      = R (x1, (x2, s))
-    sfst (R ((x1, x2), s))        = R (x1, s)
-    ssnd (R ((x1, x2), s))        = R (x2, s)
+    sfst (R ((x1, _), s))        = R (x1, s)
+    ssnd (R ((_, x2), s))        = R (x2, s)
 
     skip s                        = s
 
@@ -168,12 +180,12 @@ instance StackMachine R where
 
 -- Write a function that returns to the top of the stack as the result
 stkEvalResult :: R (a,s) -> a
-stkEvalResult R (x1, _) = x1
+stkEvalResult (R (x1, _)) = x1
 
 -- Write a function that returns to the String which is the 2nd-most top
 -- of the stack as result
 stkPrintEvalOutput :: R (a, (String, s)) -> String
-stkPrintEvalOutput (R (x1, (s1, _))) = s1
+stkPrintEvalOutput (R (_, (s1, _))) = s1
 
 {------------------------------------------------------------------------------
 -- Q2
@@ -190,6 +202,11 @@ clift1 :: Q (TExp (t -> a)) -> C t -> C a
 clift1 g (C x) = C [|| $$g $$x ||]
 
 instance StackMachine C where
+  empty         = C [|| () ||]
+
+  push x = clift1 [|| \s -> (x, s) ||]
+  -- push x (C s)  = C [|| ($$x, $$s) ||]
+  drop = clift1 [|| \(x, s) -> s ||] 
 
 -----------------------------------------------------------------
 
@@ -203,12 +220,12 @@ instance StackMachine C where
   Use RR below.  See the tutorial 10 material to get started.
 -}
 
-newtype RR c a = RR { unRR :: forall s. c s -> c (a,s) }
+-- newtype RR c a = RR { unRR :: forall s. c s -> c (a,s) }
 
-instance StackMachine c => IntSy (RR c) where
-instance StackMachine c => BoolSy (RR c) where
-instance StackMachine c => OrderSy (RR c) where
-instance StackMachine c => PairSy (RR c) where
+-- instance StackMachine c => IntSy (RR c) where
+-- instance StackMachine c => BoolSy (RR c) where
+-- instance StackMachine c => OrderSy (RR c) where
+-- instance StackMachine c => PairSy (RR c) where
 
 {- 4
   Write test cases for all of this:
