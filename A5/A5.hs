@@ -219,7 +219,8 @@ instance StackMachine C where
   smod    = clift1 [|| \(x1, (x2, e)) -> (mod x1 x2, e) ||]
   sand    = clift1 [|| \(x1, (x2, e)) -> (x1 && x2, e) ||]
   sor     = clift1 [|| \(x1, (x2, e)) -> (x1 || x2, e) ||]
-  snot    = clift1 [|| \(x1, e) -> (not x1, e) ||]
+  snot    = clift1 [|| first not ||]
+  -- snot    = clift1 [|| \(x1, e) -> (not x1, e) ||]
 
   sappend = clift1 [|| \(x1, (x2, e)) -> (x1 ++ x2, e) ||]
 
@@ -243,6 +244,27 @@ instance StackMachine C where
 
   Use RR below.  See the tutorial 10 material to get started.
 -}
+
+class Symantics repr where
+  int :: Int -> repr Int
+  bool :: Bool -> repr Bool
+
+  add :: repr Int -> repr Int -> repr Int
+  mul :: repr Int -> repr Int -> repr Int
+  sub :: repr Int -> repr Int -> repr Int
+  leq :: repr Int -> repr Int -> repr Int
+  mod :: repr Int -> repr Int -> repr Int
+
+  eql :: (Eq a) => repr a -> repr a -> repr a
+  and :: repr Bool -> repr Bool -> repr Bool
+  or :: repr Bool -> repr Bool -> repr Bool
+  not :: repr Bool -> repr Bool
+
+  append :: repr String -> repr String -> repr String 
+
+  pair :: repr a -> repr b -> repr (a, b)
+  fst :: repr (a, b) -> repr a
+  snd :: repr (a, b) -> repr b
 
 -- newtype RR c a = RR { unRR :: forall s. c s -> c (a,s) }
 
