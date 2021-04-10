@@ -211,8 +211,26 @@ instance StackMachine C where
   dup     = clift1 [|| \(x, e) -> (x, (x, e)) ||]
   rot     = clift1 [|| \(x1, (x2, (x3, e))) -> (x2, (x3, (x1, e))) ||]
   rot23   = clift1 [|| \(x1, (x2, (x3, e))) -> (x1, (x3, (x2, e))) ||]
-
   
+  sadd    = clift1 [|| \(x1, (x2, e)) -> (x1 + x2, e) ||]
+  smul    = clift1 [|| \(x1, (x2, e)) -> (x1 * x2, e) ||]
+  sleq    = clift1 [|| \(x1, (x2, e)) -> (x1 <= x2, e) ||]
+  seql    = clift1 [|| \(x1, (x2, e)) -> (x1 == x2, e) ||]
+  smod    = clift1 [|| \(x1, (x2, e)) -> (mod x1 x2, e) ||]
+  sand    = clift1 [|| \(x1, (x2, e)) -> (x1 && x2, e) ||]
+  sor     = clift1 [|| \(x1, (x2, e)) -> (x1 || x2, e) ||]
+  snot    = clift1 [|| \(x1, e) -> (not x1, e) ||]
+
+  sappend = clift1 [|| \(x1, (x2, e)) -> (x1 ++ x2, e) ||]
+
+  spair   = clift1 [|| \(x1, (x2, e)) -> ((x1, x2), e) ||]
+  unpair  = clift1 [|| \((x1, x2), e) -> (x1, (x2, e)) ||]
+  sfst    = clift1 [|| \((x1, _), e) -> (x1, e) ||]
+  ssnd    = clift1 [|| \((_, x2), e) -> (x2, e) ||]
+
+  skip    = clift1 [|| id ||]
+
+  ifThenElse = clift1 [|| \(b, (x1, (x2, e))) -> (if b then x1 else x2, e) ||]
 
 -----------------------------------------------------------------
 
