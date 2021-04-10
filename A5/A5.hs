@@ -202,11 +202,17 @@ clift1 :: Q (TExp (t -> a)) -> C t -> C a
 clift1 g (C x) = C [|| $$g $$x ||]
 
 instance StackMachine C where
-  empty         = C [|| () ||]
+  empty   = C [|| () ||]
 
-  push x = clift1 [|| \s -> (x, s) ||]
-  -- push x (C s)  = C [|| ($$x, $$s) ||]
-  drop = clift1 [|| \(x, s) -> s ||] 
+  push x  = clift1 [|| (\s -> (x, s)) ||]
+  drop    = clift1 [|| snd ||] 
+
+  swap    = clift1 [|| \(x, (y, e)) -> (y, (x, e)) ||]
+  dup     = clift1 [|| \(x, e) -> (x, (x, e)) ||]
+  rot     = clift1 [|| \(x1, (x2, (x3, e))) -> (x2, (x3, (x1, e))) ||]
+  rot23   = clift1 [|| \(x1, (x2, (x3, e))) -> (x1, (x3, (x2, e))) ||]
+
+  
 
 -----------------------------------------------------------------
 
