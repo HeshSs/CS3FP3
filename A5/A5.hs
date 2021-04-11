@@ -428,6 +428,37 @@ prog5 = push (20 :: Int)
 -- >>> runR prog5
 -- (True,())
 
+prog6 = push True
+     >> push False
+     >> push False
+     >> ifThenElse
+     >> push (3 :: Int)
+     >> push (5 :: Int)
+     >> smul
+     >> fizzbuzz
+     >> snot
+     >> rot23
+     >> sand
+
+-- >>> runR prog6
+-- (True,(" Fizz Buzz",()))
+
+prog7 = push " Fizz"
+     >> push (5 :: Int)
+     >> spair
+     >> push " Buzz"
+     >> push (3 :: Int)
+     >> spair
+     >> push True 
+     >> ifThenElse 
+     >> unpair
+     >> fizz
+     >> drop
+     >> sappend
+
+-- >>> runR prog7
+-- (" Fizz Buzz",())
+
 test4 :: IntSy repr => repr Int
 test4 = (int 1 `add` int 2) `add` (int 3 `add` int 4)
 
