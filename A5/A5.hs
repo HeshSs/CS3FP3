@@ -332,6 +332,8 @@ instance StackMachine c => StringSy (RR c) where
       - (bonus) do the same for the PE instance of Apr??
 -}
 
+-- Functions for running different compiler and interpreter
+
 runR :: (R () -> R a) -> a
 runR prog = unR $ prog empty
 
@@ -344,14 +346,87 @@ runRRR prog = unR $ unRR prog empty
 runRRC :: RR C a -> Q (TExp (a, ()))
 runRRC prog = unC $ unRR prog empty
 
-initStack :: StackMachine stk => stk (Int, ())
-initStack = push (2 :: Int) empty
+-- Test cases
 
-test1 :: StackMachine stk => stk (Int, (Int, ()))
-test1 = push (2 :: Int) initStack
+prog1 :: StackMachine stk => stk s -> stk (Bool, s)
+prog1 = push (2 :: Int) 
+     >> push (3 :: Int)
+     >> sadd 
+     >> push (3 :: Int) 
+     >> smod
+     >> push (2 :: Int) 
+     >> seql
+     >> push (4 :: Int)
+     >> push (3 :: Int)
+     >> smul
+     >> push (11 :: Int)
+     >> sleq
+     >> snot
+     >> sand
 
-test2 :: StackMachine stk => stk (Int, ())
-test2 = sadd test1
+-- >>> runR prog1
+-- (True,())
+
+prog2 = push True
+     >> push (2 :: Int)
+     >> push (3 :: Int)
+     >> rot
+     >> rot
+     >> ifThenElse
+     >> fizzbuzz
+     >> drop
+     >> push " Buzz"
+     >> swap
+     >> sappend
+     
+-- >>> runR prog2
+-- (" Fizz Buzz",())
+
+prog3 = push (15 :: Int)
+     >> fizzbuzz
+     >> drop
+     >> push True
+     >> push (2 :: Int)
+     >> push (3 :: Int)
+     >> rot
+     >> rot
+     >> ifThenElse
+     >> fizzbuzz
+     >> drop
+     >> push " Buzz"
+     >> swap
+     >> sappend
+     >> seql
+
+-- >>> runR prog3
+-- (True,())
+
+prog4 = push True
+     >> push False
+     >> push False
+     >> rot23
+     >> snot
+     >> sand
+     >> swap
+     >> snot
+     >> sand
+
+-- >>> runR prog4
+-- (True,())
+
+-- (20 - (20 - 10)) mod 3 == 1
+prog5 = push (20 :: Int)
+     >> dup
+     >> push (10 :: Int)
+     >> ssub
+     >> ssub 
+     >> push (3 :: Int)
+     >> smod
+     >> push (1 :: Int)
+     >> seql
+
+-- >>> runR prog5
+-- (True,())
 
 test4 :: IntSy repr => repr Int
 test4 = (int 1 `add` int 2) `add` (int 3 `add` int 4)
