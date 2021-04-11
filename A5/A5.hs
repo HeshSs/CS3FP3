@@ -71,7 +71,6 @@ class StackMachine stk where
 -- the string " Fizz" if True, "" otherwise
 fizz :: (StackMachine stk) => stk (Int, s) -> stk (Bool, (String, s))
 fizz = push int3              -- (3, (i, e))
-      >> swap                 -- (i, (3, e))
       >> smod                 -- (i mod 3, e)
       >> push int0            -- (0, (i mod 3, e))
       >> seql                 -- (i mod 3 == 0, e)
@@ -91,7 +90,6 @@ fizz = push int3              -- (3, (i, e))
 -- the string " Buzz" if True, "" otherwise
 buzz :: (StackMachine stk) => stk (Int, s) -> stk (Bool, (String, s))
 buzz = push int5              -- (5, (i, e))
-      >> swap                 -- (i, (5, e))
       >> smod                 -- (i mod 5, e)
       >> push int0            -- (0, (i mod 5, e))
       >> seql                 -- (i mod 5 == 0, e)
@@ -156,6 +154,8 @@ instance StackMachine R where
     rot (R (x1, (x2, (x3, s))))   = R (x2, (x3, (x1, s)))
     rot23 (R (x1, (x2, (x3, s)))) = R (x1, (x3, (x2, s)))
 
+  -- The order of input doesn't matter for commutative operators
+  -- e.g. Order only matters for subtraction and modulo in the following operators
     sadd (R (x1, (x2, s)))        = R (x1 + x2, s)
     ssub (R (x1, (x2, s)))        = R (x2 - x1, s)
     smul (R (x1, (x2, s)))        = R (x1 * x2, s)
@@ -215,12 +215,14 @@ instance StackMachine C where
   rot     = clift1 [|| \(x1, (x2, (x3, e))) -> (x2, (x3, (x1, e))) ||]
   rot23   = clift1 [|| \(x1, (x2, (x3, e))) -> (x1, (x3, (x2, e))) ||]
   
+  -- The order of input doesn't matter for commutative operators
+  -- e.g. Order only matters for subtraction and modulo in the following operators
   sadd    = clift1 [|| \(x1, (x2, e)) -> (x1 + x2, e) ||]
   ssub    = clift1 [|| \(x1, (x2, e)) -> (x2 - x1, e) ||]
   smul    = clift1 [|| \(x1, (x2, e)) -> (x1 * x2, e) ||]
   sleq    = clift1 [|| \(x1, (x2, e)) -> (x1 <= x2, e) ||]
   seql    = clift1 [|| \(x1, (x2, e)) -> (x1 == x2, e) ||]
-  smod    = clift1 [|| \(x1, (x2, e)) -> (mod x1 x2, e) ||]
+  smod    = clift1 [|| \(x1, (x2, e)) -> (mod x2 x1, e) ||]
   sand    = clift1 [|| \(x1, (x2, e)) -> (x1 && x2, e) ||]
   sor     = clift1 [|| \(x1, (x2, e)) -> (x1 || x2, e) ||]
   snot    = clift1 [|| first not ||]
@@ -281,6 +283,8 @@ class StringSy repr where
 
 newtype RR c a = RR { unRR :: forall s. c s -> c (a,s) }
 
+-- The order of input doesn't matter for commutative operators
+-- e.g. Order only matters for subtraction and modulo in the following operators
 instance StackMachine c => IntSy (RR c) where
   int x     = RR (push x)
   add x y   = RR (sadd . unRR y . unRR x)
