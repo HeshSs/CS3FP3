@@ -159,7 +159,7 @@ instance StackMachine R where
     sadd (R (x1, (x2, s)))        = R (x1 + x2, s)
     ssub (R (x1, (x2, s)))        = R (x2 - x1, s)
     smul (R (x1, (x2, s)))        = R (x1 * x2, s)
-    sleq (R (x1, (x2, s)))        = R (x1 <= x2, s)
+    sleq (R (x1, (x2, s)))        = R (x2 <= x1, s)
     seql (R (x1, (x2, s)))        = R (x1 == x2, s)
     smod (R (x1, (x2, s)))        = R (mod x2 x1, s)
     sand (R (x1, (x2, s)))        = R (x1 && x2, s)
@@ -220,7 +220,7 @@ instance StackMachine C where
   sadd    = clift1 [|| \(x1, (x2, e)) -> (x1 + x2, e) ||]
   ssub    = clift1 [|| \(x1, (x2, e)) -> (x2 - x1, e) ||]
   smul    = clift1 [|| \(x1, (x2, e)) -> (x1 * x2, e) ||]
-  sleq    = clift1 [|| \(x1, (x2, e)) -> (x1 <= x2, e) ||]
+  sleq    = clift1 [|| \(x1, (x2, e)) -> (x2 <= x1, e) ||]
   seql    = clift1 [|| \(x1, (x2, e)) -> (x1 == x2, e) ||]
   smod    = clift1 [|| \(x1, (x2, e)) -> (mod x2 x1, e) ||]
   sand    = clift1 [|| \(x1, (x2, e)) -> (x1 && x2, e) ||]
@@ -300,7 +300,7 @@ instance StackMachine c => BoolSy (RR c) where
   not_ x1     = RR (snot . unRR x1)
 
 instance StackMachine c => OrderSy (RR c) where
-  leq x1 x2   = RR (sleq . unRR x1 . unRR x2)
+  leq x1 x2   = RR (sleq . unRR x2 . unRR x1)
 
 instance StackMachine c => PairSy (RR c) where
   pair x y    = RR (spair . unRR x . unRR y)
