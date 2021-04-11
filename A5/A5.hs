@@ -39,6 +39,7 @@ class StackMachine stk where
 
     -- 's' prefix to obvious things to avoid name clashes
     sadd :: Num a => stk (a, (a, s)) -> stk (a, s)
+    ssub :: Num a => stk (a, (a, s)) -> stk (a, s)
     smul :: Num a => stk (a, (a, s)) -> stk (a, s)
     sleq :: Ord a => stk (a, (a, s)) -> stk (Bool, s)
     seql :: Eq  a => stk (a, (a, s)) -> stk (Bool, s)
@@ -156,6 +157,7 @@ instance StackMachine R where
     rot23 (R (x1, (x2, (x3, s)))) = R (x1, (x3, (x2, s)))
 
     sadd (R (x1, (x2, s)))        = R (x1 + x2, s)
+    ssub (R (x1, (x2, s)))        = R (x2 - x1, s)
     smul (R (x1, (x2, s)))        = R (x1 * x2, s)
     sleq (R (x1, (x2, s)))        = R (x1 <= x2, s)
     seql (R (x1, (x2, s)))        = R (x1 == x2, s)
@@ -214,6 +216,7 @@ instance StackMachine C where
   rot23   = clift1 [|| \(x1, (x2, (x3, e))) -> (x1, (x3, (x2, e))) ||]
   
   sadd    = clift1 [|| \(x1, (x2, e)) -> (x1 + x2, e) ||]
+  ssub    = clift1 [|| \(x1, (x2, e)) -> (x2 - x1, e) ||]
   smul    = clift1 [|| \(x1, (x2, e)) -> (x1 * x2, e) ||]
   sleq    = clift1 [|| \(x1, (x2, e)) -> (x1 <= x2, e) ||]
   seql    = clift1 [|| \(x1, (x2, e)) -> (x1 == x2, e) ||]
@@ -280,6 +283,11 @@ class StringSy repr where
 newtype RR c a = RR { unRR :: forall s. c s -> c (a,s) }
 
 instance StackMachine c => IntSy (RR c) where
+  int x = RR (push x)
+  add x y = RR (unRR x >> unRR y >> sadd)
+  mul x y = RR (unRR x >> unRR y >> smul)
+  sub x y = RR (unRR x >> unRR y >> ssub)
+  mod_ x y = RR (unRR x >> unRR y >> smod)
 
 instance StackMachine c => BoolSy (RR c) where
 
