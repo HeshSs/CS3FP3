@@ -259,7 +259,6 @@ class IntSy repr where
 class BoolSy repr where
   bool :: Bool -> repr Bool
   if_ :: repr Bool -> repr a -> repr a -> repr a
-
   and_ :: repr Bool -> repr Bool -> repr Bool
   or_ :: repr Bool -> repr Bool -> repr Bool
   not_ :: repr Bool -> repr Bool
@@ -283,21 +282,24 @@ class StringSy repr where
 newtype RR c a = RR { unRR :: forall s. c s -> c (a,s) }
 
 instance StackMachine c => IntSy (RR c) where
-  int x = RR (push x)
-  add x y = RR (unRR x >> unRR y >> sadd)
-  mul x y = RR (unRR x >> unRR y >> smul)
-  sub x y = RR (unRR x >> unRR y >> ssub)
-  mod_ x y = RR (unRR x >> unRR y >> smod)
+  int x     = RR (push x)
+  add x y   = RR (sadd . unRR y . unRR x)
+  mul x y   = RR (smul . unRR y . unRR x)
+  sub x y   = RR (ssub . unRR y . unRR x)
+  mod_ x y  = RR (smod . unRR y . unRR x)
 
 instance StackMachine c => BoolSy (RR c) where
+  bool x      = RR (push x)
+  if_ b x1 x2 = RR (ifThenElse . unRR b . unRR x1 . unRR x2)
+
 
 instance StackMachine c => OrderSy (RR c) where
 
 instance StackMachine c => PairSy (RR c) where
 
-instance StackMachine c => EqSy (RR c) where 
+-- instance StackMachine c => EqSy (RR c) where 
 
-instance StackMachine c => StringSy (RR c) where
+-- instance StackMachine c => StringSy (RR c) where
 
 {- 4
   Write test cases for all of this:
