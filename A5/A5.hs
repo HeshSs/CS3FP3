@@ -1,6 +1,7 @@
 {-# OPTIONS_GHC -Wall #-}
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE RankNTypes #-}
+{-# LANGUAGE NoMonomorphismRestriction #-}
 
 module A5ans where
 
@@ -8,8 +9,8 @@ import Prelude hiding ((>>), drop)
 
 import Data.Bifunctor ( Bifunctor(first) )
 
-import Language.Haskell.TH ( Q, TExp )
-import Language.Haskell.TH.Syntax (Lift)
+import Language.Haskell.TH ( Q, TExp, runQ )
+import Language.Haskell.TH.Syntax (Lift, unTypeQ)
 
 
 {------------------------------------------------------------------------------
@@ -207,7 +208,7 @@ clift1 g (C x) = C [|| $$g $$x ||]
 instance StackMachine C where
   empty   = C [|| () ||]
 
-  push x  = clift1 [|| (\s -> (x, s)) ||]
+  push    = \x -> clift1 [|| \s -> (x, s)  ||]
   drop    = clift1 [|| snd ||] 
 
   swap    = clift1 [|| \(x, (y, e)) -> (y, (x, e)) ||]
@@ -330,3 +331,38 @@ instance StackMachine c => StringSy (RR c) where
       - do the same for the PP instance of Mar22
       - (bonus) do the same for the PE instance of Apr??
 -}
+
+runR :: (R () -> R a) -> a
+runR prog = unR $ prog empty
+
+runC :: (C () -> C a) -> Q (TExp a)
+runC prog = unC $ prog empty
+
+runRRR :: RR R a -> (a, ())
+runRRR prog = unR $ unRR prog empty 
+
+runRRC :: RR C a -> Q (TExp (a, ()))
+runRRC prog = unC $ unRR prog empty
+
+initStack :: StackMachine stk => stk (Int, ())
+initStack = push (2 :: Int) empty
+
+test1 :: StackMachine stk => stk (Int, (Int, ()))
+test1 = push (2 :: Int) initStack
+
+test2 :: StackMachine stk => stk (Int, ())
+test2 = sadd test1
+
+test4 :: IntSy repr => repr Int
+test4 = (int 1 `add` int 2) `add` (int 3 `add` int 4)
+
+test5 :: (OrderSy repr, IntSy repr) => repr Bool
+test5 = (int 1 `add` int 2) `mul` (int 3 `add` int 4) `leq` int 9
+
+runQ1 = runQ $ unTypeQ $ runRRC test4
+-- >>> runRRR test4
+-- (10,())
+
+-- main :: IO ()
+-- main = do
+--   let  = 
