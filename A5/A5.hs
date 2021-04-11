@@ -264,7 +264,7 @@ class BoolSy repr where
   not_ :: repr Bool -> repr Bool
 
 class OrderSy repr where
-  leq :: repr Int -> repr Int -> repr Int
+  leq :: repr Int -> repr Int -> repr Bool
 
 class PairSy repr where
   pair :: repr a -> repr b -> repr (a, b)
@@ -291,15 +291,23 @@ instance StackMachine c => IntSy (RR c) where
 instance StackMachine c => BoolSy (RR c) where
   bool x      = RR (push x)
   if_ b x1 x2 = RR (ifThenElse . unRR b . unRR x1 . unRR x2)
-
+  and_ x1 x2  = RR (sand . unRR x1 . unRR x2)
+  or_ x1 x2   = RR (sor . unRR x1 . unRR x2)
+  not_ x1     = RR (snot . unRR x1)
 
 instance StackMachine c => OrderSy (RR c) where
+  leq x1 x2   = RR (sleq . unRR x1 . unRR x2)
 
 instance StackMachine c => PairSy (RR c) where
+  pair x y    = RR (spair . unRR x . unRR y)
+  fst_ x      = RR (sfst . unRR x)
+  snd_ x      = RR (ssnd . unRR x)
 
--- instance StackMachine c => EqSy (RR c) where 
+instance StackMachine c => EqSy (RR c) where 
+  eql x y     = RR (seql . unRR x . unRR y)
 
--- instance StackMachine c => StringSy (RR c) where
+instance StackMachine c => StringSy (RR c) where
+  append x y  = RR (sappend . unRR x . unRR y)
 
 {- 4
   Write test cases for all of this:
