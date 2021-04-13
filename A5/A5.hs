@@ -9,8 +9,8 @@ import Prelude hiding ((>>), drop)
 
 import Data.Bifunctor ( Bifunctor(first) )
 
-import Language.Haskell.TH ( Q, TExp, runQ, Lit (IntegerL) )
-import Language.Haskell.TH.Syntax (Lift, unTypeQ)
+import Language.Haskell.TH ( Q, TExp, pprint, runQ, Lit (IntegerL) )
+import Language.Haskell.TH.Syntax (Lift, unTypeQ, unType)
 
 
 {------------------------------------------------------------------------------
@@ -350,7 +350,8 @@ runRRC prog = unC $ unRR prog empty
 
 -- Test cases
 
-prog1 :: StackMachine stk => stk s -> stk (Bool, s)
+prog1, prog2, prog3, prog4, prog5, prog6, prog7, prog8, prog9, prog10 :: StackMachine stk =>  stk s -> stk (Bool, s)
+
 prog1 = push (2 :: Int) 
      >> push (3 :: Int)
      >> sadd 
@@ -380,9 +381,11 @@ prog2 = push True
      >> push " Buzz"
      >> swap
      >> sappend
+     >> push " Fizz Buzz"
+     >> seql
      
 -- >>> runR prog2
--- (" Fizz Buzz",())
+-- (True,())
 
 prog3 = push (15 :: Int)
      >> fizzbuzz
@@ -441,9 +444,13 @@ prog6 = push True
      >> snot
      >> rot23
      >> sand
+     >> swap
+     >> push " Fizz Buzz"
+     >> seql
+     >> sand
 
 -- >>> runR prog6
--- (True,(" Fizz Buzz",()))
+-- (True,())
 
 prog7 = push " Fizz"
      >> push (5 :: Int)
@@ -457,9 +464,11 @@ prog7 = push " Fizz"
      >> fizz
      >> drop
      >> sappend
+     >> push " Fizz Buzz"
+     >> seql
 
 -- >>> runR prog7
--- (" Fizz Buzz",())
+-- (True,())
 
 prog8 = push " Fizz"
      >> push (5 :: Int)
@@ -473,9 +482,11 @@ prog8 = push " Fizz"
      >> buzz
      >> drop
      >> sappend
+     >> push " Buzz Fizz"
+     >> seql
 
 -- >>> runR prog8
--- (" Buzz Fizz",())
+-- (True,())
 
 prog9 = push (-5 :: Int)
      >> push (5 :: Int)
@@ -513,16 +524,46 @@ prog10 = push False
 -- >>> runR prog10
 -- (True,())
 
-test4 :: IntSy repr => repr Int
-test4 = (int 1 `add` int 2) `add` (int 3 `add` int 4)
+prog11 = (int 1 `add` int 2) `add` (int 3 `add` int 4)
 
-test5 :: (OrderSy repr, IntSy repr) => repr Bool
-test5 = (int 1 `add` int 2) `mul` (int 3 `add` int 4) `leq` int 9
+-- >>> runQ $ unTypeQ $ runRRC prog11
 
-runQ1 = runQ $ unTypeQ $ runRRC test4
--- >>> runRRR test4
--- (10,())
+prog12 = (int 1 `add` int 2) `mul` (int 3 `add` int 4) `leq` int 9
 
--- main :: IO ()
--- main = do
---   let  = 
+-- >>> runQ $ unTypeQ $ runRRC prog12
+
+prog13 = (int 1 `add` int 2)
+
+-- >>> runQ $ unTypeQ $ runRRC prog13
+
+prog14 = (int 1 `add` int 2)
+
+-- >>> runQ $ unTypeQ $ runRRC prog14
+
+prog15 = (int 1 `add` int 2)
+
+-- >>> runQ $ unTypeQ $ runRRC prog15
+-- AppE (LamE [TupP [VarP x1_0,TupP [VarP x2_1,VarP e_2]]] (TupE [Just (InfixE (Just (VarE x1_0)) (VarE GHC.Num.+) (Just (VarE x2_1))),Just (VarE e_2)])) (AppE (LamE [VarP s_3] (TupE [Just (LitE (IntegerL 2)),Just (VarE s_3)])) (AppE (LamE [VarP s_4] (TupE [Just (LitE (IntegerL 1)),Just (VarE s_4)])) (ConE GHC.Tuple.())))
+
+-- Taken from https://mail.haskell.org/pipermail/beginners/2012-October/010778.html
+myfor :: [C () -> C a] -> IO ()
+myfor [] = return ()
+myfor (x:xs) = do
+  y <- (runQ . runC) x
+  print $ unType y
+  myfor  xs
+
+
+main :: IO ()
+main = do
+  let progs = [prog1, prog2, prog3, prog4, prog5, prog6, prog7, prog8, prog9, prog10]
+
+  -- Run all 10 programs and output the result
+  print $ map (fst . runR) progs
+
+  -- Pass all the programs through the C compiler and pprint them out
+  progsC <- myfor progs
+
+  print progsC
+
+  -- Decompiling programs
