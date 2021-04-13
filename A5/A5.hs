@@ -9,8 +9,8 @@ import Prelude hiding ((>>), drop)
 
 import Data.Bifunctor ( Bifunctor(first) )
 
-import Language.Haskell.TH ( Q, TExp, pprint, runQ, Lit (IntegerL) )
-import Language.Haskell.TH.Syntax (Lift, unTypeQ, unType)
+import Language.Haskell.TH ( Q, TExp, runQ)
+import Language.Haskell.TH.Syntax (Lift, unType)
 
 
 {------------------------------------------------------------------------------
@@ -524,26 +524,31 @@ prog10 = push False
 -- >>> runR prog10
 -- (True,())
 
+prog11 :: (EqSy repr, IntSy repr) => repr Bool
 prog11 = (int 2 `add` int 2) `add` (int 3 `add` int 2) `mul` int 9 `eql` int 81
           
 -- >>> runRRR prog11
 -- (True,())
 
+prog12 :: (BoolSy repr, OrderSy repr, IntSy repr) => repr Bool
 prog12 = not_ $ (int 1 `add` int 2) `mul` (int 3 `add` int 4) `leq` int 9 
 
 -- >>> runRRR prog12
 -- (True,())
 
+prog13 :: (EqSy repr, IntSy repr) => repr Bool
 prog13 = (int 1 `add` int 2) `sub` (int 4 `mul` int 1) `eql` int (-1)
 
 -- >>> runRRR prog13
 -- (True,())
 
+prog14 :: (OrderSy repr, PairSy repr, IntSy repr) => repr Bool
 prog14 = fst_ (pair (int 2) (int 4)) `leq` snd_ (pair (int 3) (int 4))
 
 -- >>> runRRR prog14
 -- (True,())
 
+prog15 :: (BoolSy repr, OrderSy repr, IntSy repr) => repr Bool
 prog15 = (if_ (bool False) (int 1) (int 3) `leq` int 2) `or_` (if_ (bool True) (int 1) (int 3) `leq` int 2)
 
 -- >>> runRRR prog15
@@ -555,6 +560,8 @@ myfor [] = return ()
 myfor (x:xs) = do
   y <- (runQ . runC) x
   print $ unType y
+  -- The pprinter would make it not pretty so I removed it
+  -- print $ pprint $ unType y
   myfor  xs
 
 
