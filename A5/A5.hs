@@ -9,7 +9,7 @@ import Prelude hiding ((>>), drop)
 
 import Data.Bifunctor ( Bifunctor(first) )
 
-import Language.Haskell.TH ( Q, TExp, runQ )
+import Language.Haskell.TH ( Q, TExp, runQ, Lit (IntegerL) )
 import Language.Haskell.TH.Syntax (Lift, unTypeQ)
 
 
@@ -157,6 +157,8 @@ instance StackMachine R where
 
   -- The order of input doesn't matter for commutative operators
   -- e.g. Order only matters for subtraction and modulo in the following operators
+  -- smod (R (x1, (x2, e))) works as x2 mod x1 since top of the stack is given as a first parameter
+  -- Then, the next element on the stack is given as a 2nd parameter to `mod`
     sadd (R (x1, (x2, s)))        = R (x1 + x2, s)
     ssub (R (x1, (x2, s)))        = R (x2 - x1, s)
     smul (R (x1, (x2, s)))        = R (x1 * x2, s)
@@ -458,6 +460,58 @@ prog7 = push " Fizz"
 
 -- >>> runR prog7
 -- (" Fizz Buzz",())
+
+prog8 = push " Fizz"
+     >> push (5 :: Int)
+     >> spair
+     >> push " Buzz"
+     >> push (3 :: Int)
+     >> spair
+     >> push False 
+     >> ifThenElse 
+     >> unpair
+     >> buzz
+     >> drop
+     >> sappend
+
+-- >>> runR prog8
+-- (" Buzz Fizz",())
+
+prog9 = push (-5 :: Int)
+     >> push (5 :: Int)
+     >> spair
+     >> push (-3 :: Int)
+     >> push (3 :: Int)
+     >> spair
+     >> push True
+     >> rot23
+     >> ifThenElse
+     >> dup
+     >> ssnd
+     >> swap
+     >> sfst
+     >> sadd
+     >> push (0 :: Int)
+     >> seql
+
+-- >>> runR prog9
+-- (True,())
+
+prog10 = push False
+      >> snot
+      >> push False
+      >> sor
+      >> push (20 :: Int)
+      >> swap
+      >> push (-10 :: Int)
+      >> rot
+      >> drop
+      >> ssub
+      >> push (-30 :: Int)
+      >> seql
+
+-- >>> runR prog10
+-- (True,())
 
 test4 :: IntSy repr => repr Int
 test4 = (int 1 `add` int 2) `add` (int 3 `add` int 4)
