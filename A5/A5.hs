@@ -524,26 +524,30 @@ prog10 = push False
 -- >>> runR prog10
 -- (True,())
 
-prog11 = (int 1 `add` int 2) `add` (int 3 `add` int 4)
+prog11 = (int 2 `add` int 2) `add` (int 3 `add` int 2) `mul` int 9 `eql` int 81
+          
+-- >>> runRRR prog11
+-- (True,())
 
--- >>> runQ $ unTypeQ $ runRRC prog11
+prog12 = not_ $ (int 1 `add` int 2) `mul` (int 3 `add` int 4) `leq` int 9 
 
-prog12 = (int 1 `add` int 2) `mul` (int 3 `add` int 4) `leq` int 9
+-- >>> runRRR prog12
+-- (True,())
 
--- >>> runQ $ unTypeQ $ runRRC prog12
+prog13 = (int 1 `add` int 2) `sub` (int 4 `mul` int 1) `eql` int (-1)
 
-prog13 = (int 1 `add` int 2)
+-- >>> runRRR prog13
+-- (True,())
 
--- >>> runQ $ unTypeQ $ runRRC prog13
+prog14 = fst_ (pair (int 2) (int 4)) `leq` snd_ (pair (int 3) (int 4))
 
-prog14 = (int 1 `add` int 2)
+-- >>> runRRR prog14
+-- (True,())
 
--- >>> runQ $ unTypeQ $ runRRC prog14
+prog15 = (if_ (bool False) (int 1) (int 3) `leq` int 2) `or_` (if_ (bool True) (int 1) (int 3) `leq` int 2)
 
-prog15 = (int 1 `add` int 2)
-
--- >>> runQ $ unTypeQ $ runRRC prog15
--- AppE (LamE [TupP [VarP x1_0,TupP [VarP x2_1,VarP e_2]]] (TupE [Just (InfixE (Just (VarE x1_0)) (VarE GHC.Num.+) (Just (VarE x2_1))),Just (VarE e_2)])) (AppE (LamE [VarP s_3] (TupE [Just (LitE (IntegerL 2)),Just (VarE s_3)])) (AppE (LamE [VarP s_4] (TupE [Just (LitE (IntegerL 1)),Just (VarE s_4)])) (ConE GHC.Tuple.())))
+-- >>> runRRR prog15
+-- (True,())
 
 -- Taken from https://mail.haskell.org/pipermail/beginners/2012-October/010778.html
 myfor :: [C () -> C a] -> IO ()
@@ -557,7 +561,7 @@ myfor (x:xs) = do
 main :: IO ()
 main = do
   let progs = [prog1, prog2, prog3, prog4, prog5, prog6, prog7, prog8, prog9, prog10]
-
+  let decomps = [prog11, prog12, prog13, prog14, prog15]
   -- Run all 10 programs and output the result
   print $ map (fst . runR) progs
 
@@ -567,3 +571,4 @@ main = do
   print progsC
 
   -- Decompiling programs
+  print $ map (fst . runRRR) decomps
