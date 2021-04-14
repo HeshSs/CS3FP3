@@ -560,7 +560,7 @@ myfor [] = return ()
 myfor (x:xs) = do
   y <- (runQ . runC) x
   print $ unType y
-  -- The pprinter would make it not pretty so I removed it
+  -- The pprinter would make it not pretty :) so I removed it
   -- print $ pprint $ unType y
   myfor  xs
 
